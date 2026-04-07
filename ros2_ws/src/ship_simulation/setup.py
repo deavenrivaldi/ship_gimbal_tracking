@@ -13,6 +13,7 @@ setup(
             ['resource/ship_simulation']),
         ('share/ship_simulation', ['package.xml']),
         ('share/ship_simulation/worlds', glob('worlds/*.sdf')),
+        ('share/ship_simulation/worlds', ['worlds/camera_world.sdf'] ),
         ('share/ship_simulation/models', glob('models/**/*', recursive=True)),
     ],
     install_requires=['setuptools'],

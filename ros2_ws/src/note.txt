@@ -38,5 +38,28 @@ activate venv: source ship_gimbal/bin/activate
 
 python libraries:
     
-    
 
+build workspace
+    cd ~/projects/ship_gimbal_tracking/ros2_ws
+    source /opt/ros/jazzy/setup.bash
+    colcon build
+    source install/setup.bash
+
+launcher:
+    camera_world: ros2 launch ship_bringup camera_launch.py
+
+verification:
+    source /opt/ros/jazzy/setup.bash
+    source ~/ship_gimbal_tracking/ros2_ws/install/setup.bash
+    ros2 node list
+    ros2 topic list
+
+    expected nodes:
+        /yolo_detection_node
+        /pixel_to_angle_node
+        /foxglove_bridge
+    expected topics: 
+        /camera/image_raw
+        /target/pixel_center
+        /gimbal/angle_command
+        /debug/image
