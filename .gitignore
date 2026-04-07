@@ -1,6 +1,11 @@
+ship_gimbal/
 ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
 *.pyc
+*.log
+*.db
+*.zip
+*.tar.gz
 __pycache__/
 .vscode/

@@ -1,0 +1,36 @@
+workflow with github:
+    git pull
+        # work on ROS2 packages
+    git add .
+    git commit -m "update message"
+    git push
+
+create ros package: ros2 pkg create --build-type ament_python $package_name
+
+folder structure & function:
+    ship_gimbal_tracking
+        ros2_ws
+            src
+                ship_bringup    <- launcher
+                ship_control    <- control logic
+                ship_vision     <- openCV / detection, camera prodcessing
+                ship_description    <- URDF / robot model, sensors / joints
+                ship_simulation     <- gz world, models, plugins
+                    worlds
+                    models
+                    external
+
+            build
+            install
+            log
+        ship_gimbal     <- python venv
+        .gitignore
+        README.md
+
+python virtual environment: ship_gimbal
+activate venv: source ship_gimbal/bin/activate
+
+python libraries:
+    
+    
+
