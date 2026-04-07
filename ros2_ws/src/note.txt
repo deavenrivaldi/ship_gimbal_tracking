@@ -11,12 +11,18 @@ folder structure & function:
     ship_gimbal_tracking
         ros2_ws
             src
-                ship_bringup    <- launcher
-                ship_control    <- control logic
-                ship_vision     <- openCV / detection, camera prodcessing
-                ship_description    <- URDF / robot model, sensors / joints
-                ship_simulation     <- gz world, models, plugins
+                ship_bringup (pkg)   <- launcher
+                    ship_bringup
+                        camera_launch.py
+                ship_control (pkg)    <- control logic
+                ship_vision (pkg)     <- openCV / detection, camera processing
+                    ship_vision
+                        yolo_detection_node.py
+                        pixel_to_angle_node.py
+                ship_description (pkg)   <- URDF / robot model, sensors / joints
+                ship_simulation (pkg)   <- gz world, models, plugins
                     worlds
+                        camera_world.sdf
                     models
                     external
 

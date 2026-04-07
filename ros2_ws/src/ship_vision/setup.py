@@ -8,8 +8,8 @@ setup(
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+            ['resource/ship_vision']),
+        ('share/ship_vision', ['package.xml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,6 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'yolo_detection_node = ship_vision.yolo_detection_node:main',
+            'pixel_to_angle_node = ship_vision.pixel_to_angle_node:main',
         ],
     },
 )
