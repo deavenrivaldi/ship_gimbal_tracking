@@ -1,11 +1,14 @@
 """
 YOLO DETECTION NODE
 Package : ship_vision
-Subscribes : /camera/image_raw
+Subscribes : /ship_camera/image_raw
 Publishes  : /target/pixel_center  (geometry_msgs/Point)
              /debug/image           (sensor_msgs/Image)
 """
+import sys
+print("PYTHON:", sys.executable)
 
+import rclpy
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
@@ -139,6 +142,8 @@ class YoloDetectionNode(Node):
         targets = [t.lower() for t in TARGET_OBJECTS]
         matched = []
 
+        self.get_logger().info(f"Running detection on frame {self.frame_count}")
+        
         for box in result.boxes:
             class_id = int(box.cls[0])
             label    = result.names[class_id].lower()

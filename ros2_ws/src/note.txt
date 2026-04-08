@@ -46,7 +46,10 @@ build workspace
     source install/setup.bash
 
 launcher:
-    camera_world: ros2 launch ship_bringup camera_launch.py
+
+    camera_world: 
+        export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
+        ros2 launch ship_bringup camera_launch.py
 
 verification:
     source /opt/ros/jazzy/setup.bash
