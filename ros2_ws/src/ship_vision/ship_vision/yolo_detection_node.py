@@ -9,7 +9,6 @@ import sys
 print("PYTHON:", sys.executable)
 
 import rclpy
-import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
@@ -142,8 +141,6 @@ class YoloDetectionNode(Node):
         targets = [t.lower() for t in TARGET_OBJECTS]
         matched = []
 
-        self.get_logger().info(f"Running detection on frame {self.frame_count}")
-        
         for box in result.boxes:
             class_id = int(box.cls[0])
             label    = result.names[class_id].lower()

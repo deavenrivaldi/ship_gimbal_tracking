@@ -51,6 +51,9 @@ launcher:
         export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
         ros2 launch ship_bringup camera_launch.py
 
+    debut_plot:
+        ros2 run ship_vision plot_debug_node
+
 verification:
     source /opt/ros/jazzy/setup.bash
     source ~/ship_gimbal_tracking/ros2_ws/install/setup.bash
