@@ -53,12 +53,12 @@
     <actor name="walking_person">
 
       <skin>
-        <filename>/home/linzhensheng/.gz/fuel/fuel.gazebosim.org/mingfei/models/actor/1/meshes/walk.dae</filename>
+        <filename>model://walking_person/meshes/walk.dae</filename>
         <scale>1.0</scale>
       </skin>
 
       <animation name="walk">
-        <filename>/home/linzhensheng/.gz/fuel/fuel.gazebosim.org/mingfei/models/actor/1/meshes/walk.dae</filename>
+        <filename>model://walking_person/meshes/walk.dae</filename>
         <interpolate_x>true</interpolate_x>
       </animation>
 

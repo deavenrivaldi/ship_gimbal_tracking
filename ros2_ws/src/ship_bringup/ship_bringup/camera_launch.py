@@ -6,7 +6,7 @@ Launches : Gazebo world + image bridge + YOLO + pixel_to_angle + Foxglove
 
 import os
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, TimerAction
+from launch.actions import ExecuteProcess, TimerAction, SetEnvironmentVariable
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
@@ -19,9 +19,15 @@ def generate_launch_description():
         'worlds',
         'camera_world.sdf'
     )
+    
+    pkg_sim_share = get_package_share_directory('ship_simulation')
+    models_path = os.path.join(pkg_sim_share, 'models')
 
     return LaunchDescription([
 
+        SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', 
+                               value=models_path),
+        
         # ------- 1. Gazebo -------
         ExecuteProcess(
             cmd=['gz', 'sim', '-r', world_file],

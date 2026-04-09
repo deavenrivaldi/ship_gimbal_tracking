@@ -12,7 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/ship_bringup']),
         ('share/ship_bringup', ['package.xml']),
-        ('share/ship_bringup/launch;=', glob('ship_bringup/*.py')),
+        ('share/ship_bringup/launch=', glob('ship_bringup/*.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
