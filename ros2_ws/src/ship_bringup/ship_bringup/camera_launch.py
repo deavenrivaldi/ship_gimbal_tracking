@@ -10,7 +10,6 @@ from launch.actions import ExecuteProcess, TimerAction, SetEnvironmentVariable
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
-
 def generate_launch_description():
 
     # Path to world file via ROS2 package share
@@ -22,7 +21,12 @@ def generate_launch_description():
     
     pkg_sim_share = get_package_share_directory('ship_simulation')
     models_path = os.path.join(pkg_sim_share, 'models')
-
+    
+    pkg_vis_share = get_package_share_directory('ship_vision')
+    project_root = os.path.abspath(os.path.join(pkg_vis_share, '../../../../..'))
+    
+    venv_python = os.path.join(project_root, 'ship_gimbal', 'bin', 'python3')
+    
     return LaunchDescription([
 
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', 
@@ -56,10 +60,19 @@ def generate_launch_description():
         ]),
 
         # ------- 4. YOLO detection node -------
+        # TimerAction(period=7.0, actions=[
+        #     Node(
+        #         package='ship_vision',
+        #         executable='yolo_detection_node',
+        #         output='screen'
+        #     ),
+        # ]),
+        
         TimerAction(period=7.0, actions=[
             Node(
                 package='ship_vision',
-                executable='yolo_detection_node',
+                executable=venv_python,
+                arguments=[os.path.join(pkg_vis_share, 'yolo_detection_node.py')],
                 output='screen'
             ),
         ]),
@@ -72,5 +85,4 @@ def generate_launch_description():
                 output='screen'
             ),
         ]),
-
     ])

@@ -5,6 +5,8 @@ Subscribes : /ship_camera/image_raw
 Publishes  : /target/pixel_center  (geometry_msgs/Point)
              /debug/image           (sensor_msgs/Image)
 """
+#!/usr/bin/env python3
+
 import sys
 print("PYTHON:", sys.executable)
 

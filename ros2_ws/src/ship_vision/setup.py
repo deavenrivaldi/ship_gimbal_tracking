@@ -13,6 +13,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/ship_vision']),
         ('share/ship_vision', ['package.xml']),
+        
+        (os.path.join('share', package_name), ['ship_vision/yolo_detection_node.py']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
