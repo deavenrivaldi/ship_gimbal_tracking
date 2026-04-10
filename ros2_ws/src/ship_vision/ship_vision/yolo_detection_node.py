@@ -39,7 +39,7 @@ class YoloDetectionNode(Node):
     def __init__(self):
         super().__init__('yolo_detection_node')
 
-        # --- GPU setup ---
+        # --- GPU setup (NVIDIA CUDA ONLY)---
         if torch.cuda.is_available():
             self.get_logger().info(
                 f'🚀 GPU detected: {torch.cuda.get_device_name(0)} — using CUDA')
@@ -47,7 +47,14 @@ class YoloDetectionNode(Node):
         else:
             self.get_logger().warn('⚠️  No GPU found — falling back to CPU')
             self.device = 'cpu'
-
+        
+        # -- CPU setup if CUDA not available ---
+        # -- uncomment to force use CPU ---
+        '''
+        self.get_logger().warn('🛠️ Forcing CPU mode for AMD compatibility')
+        self.device = 'cpu'
+        '''
+        
         self.get_logger().info('🔄 Loading YOLOv8 model...')
         self.model = YOLO(MODEL_NAME)
         self.model.to(self.device)   # move model to GPU if available

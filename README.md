@@ -1,12 +1,13 @@
-workflow with github:
+## workflow with github:
 git pull # work on ROS2 packages
 git add .
 git commit -m "update message"
 git push
 
-create ros package: ros2 pkg create --build-type ament_python $package_name
+### create ros package 
+ros2 pkg create --build-type ament_python $package_name
 
-folder structure & function:
+## folder structure & function:
 ship_gimbal_tracking
 ros2_ws
 src
@@ -37,37 +38,43 @@ activate venv: source ship_gimbal/bin/activate
 
 python libraries:
 
-build workspace
+### reset colcon
+cd ~/projects/ship_gimbal_tracking/ros2_ws
+rm -rf build install log
+
+### build workspace
 cd ~/projects/ship_gimbal_tracking/ros2_ws
 source /opt/ros/jazzy/setup.bash
 colcon build
 colcon build --symlink-install --packages-select ship_vision
 source install/setup.bash
 
-launcher:
+# launcher:
 
-    camera_world:
-        export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
-        ros2 launch ship_bringup camera_launch.py
+## Camera_world:
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
+ros2 launch ship_bringup camera_launch.py
 
-    debut_plot:
-        ros2 run ship_vision plot_debug_node
+### launching with AMD GPU
+export HSA_OVERRIDE_GFX_VERSION=10.3.0
+ros2 launch ship_bringup camera_launch.py
 
-verification:
+## debut_plot:
+ros2 run ship_vision plot_debug_node
+
+## verification:
 source /opt/ros/jazzy/setup.bash
-source ~/ship_gimbal_tracking/ros2_ws/install/setup.bashInitial Commit
+source install/setup.bash
+ros2 node list
+ros2 topic list
 
-test push from zen-ubuntu 24.04
+### expected nodes:
+    /yolo_detection_node
+    /pixel_to_angle_node
+    /foxglove_bridge
 
-    ros2 node list
-    ros2 topic list
-
-    expected nodes:
-        /yolo_detection_node
-        /pixel_to_angle_node
-        /foxglove_bridge
-    expected topics:
-        /camera/image_raw
-        /target/pixel_center
-        /gimbal/angle_command
-        /debug/image
+### expected topics:
+    /camera/image_raw
+    /target/pixel_center
+    /gimbal/angle_command
+    /debug/image
