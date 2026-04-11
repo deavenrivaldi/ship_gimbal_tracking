@@ -68,12 +68,14 @@ class PlotDebugNode(Node):
         self.ax[0].plot(list(self.time_data), list(self.pixel_x), label='Pixel X', color='blue')
         self.ax[0].plot(list(self.time_data), list(self.pixel_y), label='Pixel Y', color='green')
         self.ax[0].set_ylim(-350, 350)
+        self.ax[0].set_title('Target Pixel Position (Relative to Center)')
         self.ax[0].legend(loc='upper right')
         self.ax[0].grid(True)
 
         self.ax[1].plot(list(self.time_data), list(self.angle_x), label='Pan', color='red')
         self.ax[1].plot(list(self.time_data), list(self.angle_y), label='Tilt', color='yellow')
         self.ax[1].set_ylim(-40, 40)
+        self.ax[1].set_title('Gimbal Angles')
         self.ax[1].legend(loc='upper right')
         self.ax[1].grid(True)
 
