@@ -32,6 +32,7 @@ setup(
             'yolo_detection_node = ship_vision.yolo_detection_node:main',
             'pixel_to_angle_node = ship_vision.pixel_to_angle_node:main',
             'plot_debug_node = ship_vision.plot_debug_node:main',
+            'fg_plot_debug_node = ship_vision.fg_plot_debug_node:main'
         ],
     },
 )

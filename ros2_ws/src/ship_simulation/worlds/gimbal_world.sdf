@@ -1,0 +1,317 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="gimbal_world">
+
+    <!-- Physics -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- Plugins -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher"/>
+
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"/>
+
+
+    <!-- Lighting -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- Ground plane -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>100 100</size></plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ===== WALKING PERSON ACTOR ===== -->
+    <actor name="walking_person">
+      <skin>
+        <filename>model://walking_person/meshes/walk.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walk">
+        <filename>model://walking_person/meshes/walk.dae</filename>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+      <script>
+        <loop>true</loop>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk">
+            <!-- Uncomment for straight Walking Motion -->
+            <!--
+            <waypoint><time>0</time><pose>5 -4 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>1</time><pose>5 -3.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>2</time><pose>5 -3 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>3</time><pose>5 -2.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>4</time><pose>5 -2 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>5</time><pose>5 -1.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>6</time><pose>5 -1 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>7</time><pose>5 -0.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>8</time><pose>5 0 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>9</time><pose>5 0.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>10</time><pose>5 1 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>11</time><pose>5 1.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>12</time><pose>5 2 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>13</time><pose>5 2.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>14</time><pose>5 3 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>15</time><pose>5 3.5 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>16</time><pose>5 4 0.95 0 0 3.1416</pose></waypoint>
+            -->
+
+            <!-- Uncomment for Slide Jumping Motion -->
+            
+            <waypoint><time>0</time><pose>5 4 0.95 0 0 3.1416</pose></waypoint>
+            <waypoint><time>1</time><pose>5 3.5 1.35 0 0 3.1416</pose></waypoint>
+            <waypoint><time>2</time><pose>5 3 1.65 0 0 3.1416</pose></waypoint>
+            <waypoint><time>3</time><pose>5 2.5 1.85 0 0 3.1416</pose></waypoint>
+            <waypoint><time>4</time><pose>5 2 2.05 0 0 3.1416</pose></waypoint>
+            <waypoint><time>5</time><pose>5 1.5 2.15 0 0 3.1416</pose></waypoint>
+            <waypoint><time>6</time><pose>5 1 2.2 0 0 3.1416</pose></waypoint>
+            <waypoint><time>7</time><pose>5 0.5 2.2 0 0 3.1416</pose></waypoint>
+            <waypoint><time>8</time><pose>5 0 2.2 0 0 3.1416</pose></waypoint>
+            <waypoint><time>9</time><pose>5 -0.5 2.2 0 0 3.1416</pose></waypoint>
+            <waypoint><time>10</time><pose>5 -1 2.15 0 0 3.1416</pose></waypoint>
+            <waypoint><time>11</time><pose>5 -1.5 2.05 0 0 3.1416</pose></waypoint>
+            <waypoint><time>12</time><pose>5 -2 1.85 0 0 3.1416</pose></waypoint>
+            <waypoint><time>13</time><pose>5 -2.5 1.65 0 0 3.1416</pose></waypoint>
+            <waypoint><time>14</time><pose>5 -3 1.35 0 0 3.1416</pose></waypoint>
+            <waypoint><time>15</time><pose>5 -3.5 1.1 0 0 3.1416</pose></waypoint>
+            <waypoint><time>16</time><pose>5 -4 0.95 0 0 3.1416</pose></waypoint>
+            
+
+        </trajectory>
+      </script>
+    </actor>
+
+    <!-- ===== 3-AXIS GIMBAL + CAMERA ===== -->
+    <model name="gimbal">
+      <static>false</static>
+      <pose>0 0 1.5 0 0 0</pose>
+
+      <!-- Base link — fixed mount point -->
+      <link name="base_link">
+        <visual name="visual">
+          <geometry><box><size>0.2 0.2 0.1</size></box></geometry>
+          <material><ambient>0.3 0.3 0.3 1</ambient></material>
+        </visual>
+
+        <collision name="collision">
+          <geometry><box><size>0.2 0.2 0.1</size></box></geometry>
+        </collision>
+
+        <inertial>
+          <mass>1.0</mass>
+          <inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia>
+        </inertial>
+
+        <!-- IMU sensor - mounted on gimbal base -->
+        <sensor name="imu_sensor" type="imu">
+          <always_on>1</always_on>
+          <update_rate>100</update_rate>
+          <topic>/imu/data</topic>
+          <imu>
+            <angular_velocity>
+              <x><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></x>
+              <y><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></y>
+              <z><noise type="gaussian"><mean>0</mean><stddev>0.009</stddev></noise></z>
+            </angular_velocity>
+            <linear_acceleration>
+              <x><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></x>
+              <y><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></y>
+              <z><noise type="gaussian"><mean>0</mean><stddev>0.021</stddev></noise></z>
+            </linear_acceleration>
+          </imu>
+        </sensor>
+
+      </link>
+
+      <!-- Pan link — rotates around Z axis (left/right) -->
+      <link name="pan_link">
+        <pose>0 0 0.1 0 0 0</pose>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>0.8 0.4 0.0 1</ambient></material>
+        </visual>
+        <collision name="collision">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+        </collision>
+        <inertial>
+          <mass>0.3</mass>
+          <inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia>
+        </inertial>
+      </link>
+
+      <!-- Pan joint — Z axis rotation -->
+      <joint name="pan_joint" type="revolute">
+        <parent>base_link</parent>
+        <child>pan_link</child>
+        <pose>0 0 0 0 0 0</pose>
+        <axis>
+          <xyz>0 0 1</xyz>
+          <dynamics><damping>0.5</damping><friction>0.1</friction></dynamics>
+        </axis>
+      </joint>
+
+      <!-- Tilt link — rotates around Y axis (up/down) -->
+      <link name="tilt_link">
+        <pose>0 0 0.2 0 0 0</pose>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>0.0 0.6 0.8 1</ambient></material>
+        </visual>
+        <collision name="collision">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+        </collision>
+        <inertial>
+          <mass>0.3</mass>
+          <inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia>
+        </inertial>
+      </link>
+
+      <!-- Tilt joint — Y axis rotation -->
+      <joint name="tilt_joint" type="revolute">
+        <parent>pan_link</parent>
+        <child>tilt_link</child>
+        <pose>0 0 0 0 0 0</pose>
+        <axis>
+          <xyz>0 1 0</xyz>
+          <dynamics><damping>0.5</damping><friction>0.1</friction></dynamics>
+        </axis>
+      </joint>
+
+      <!-- Roll link — rotates around X axis -->
+      <link name="roll_link">
+        <pose>0 0 0.3 0 0 0</pose>
+        <visual name="visual">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+          <material><ambient>0.0 0.8 0.2 1</ambient></material>
+        </visual>
+        <collision name="collision">
+          <geometry><cylinder><radius>0.05</radius><length>0.08</length></cylinder></geometry>
+        </collision>
+        <inertial>
+          <mass>0.3</mass>
+          <inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia>
+        </inertial>
+      </link>
+
+      <!-- Roll joint — X axis rotation -->
+      <joint name="roll_joint" type="revolute">
+        <parent>tilt_link</parent>
+        <child>roll_link</child>
+        <pose>0 0 0 0 0 0</pose>
+        <axis>
+          <xyz>1 0 0</xyz>
+          <dynamics><damping>0.5</damping><friction>0.1</friction></dynamics>
+        </axis>
+      </joint>
+
+      <!-- Camera link — attached to roll link -->
+      <link name="camera_link">
+        <pose>0 0 0.38 0 0 0</pose>
+        <visual name="visual">
+          <geometry><box><size>0.08 0.08 0.05</size></box></geometry>
+          <material>
+            <ambient>0.1 0.1 0.8 1</ambient>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry><box><size>0.08 0.08 0.05</size></box></geometry>
+        </collision>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia><ixx>0.0001</ixx><iyy>0.0001</iyy><izz>0.0001</izz></inertia>
+        </inertial>
+
+        <!-- Camera sensor -->
+        <sensor name="camera_sensor" type="camera">
+          <pose>0 0 0 0 0 0</pose>
+          <always_on>1</always_on>
+          <update_rate>30</update_rate>
+          <camera>
+            <horizontal_fov>1.047</horizontal_fov>
+            <image>
+              <width>640</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+          </camera>
+          <topic>/camera/image_raw</topic>
+        </sensor>
+      </link>
+
+      <!-- Camera joint — fixed to roll link -->
+      <joint name="camera_joint" type="fixed">
+        <parent>roll_link</parent>
+        <child>camera_link</child>
+      </joint>
+
+      <!-- Joint velocity controller plugin -->
+      <plugin filename="gz-sim-joint-controller-system"
+              name="gz::sim::systems::JointController">
+        <joint_name>pan_joint</joint_name>
+        <topic>/gimbal/pan/cmd_vel</topic>
+        <initial_velocity>0</initial_velocity>
+      </plugin>
+
+      <plugin filename="gz-sim-joint-controller-system"
+              name="gz::sim::systems::JointController">
+        <joint_name>tilt_joint</joint_name>
+        <topic>/gimbal/tilt/cmd_vel</topic>
+        <initial_velocity>0</initial_velocity>
+      </plugin>
+
+      <plugin filename="gz-sim-joint-controller-system"
+              name="gz::sim::systems::JointController">
+        <joint_name>roll_joint</joint_name>
+        <topic>/gimbal/roll/cmd_vel</topic>
+        <initial_velocity>0</initial_velocity>
+      </plugin>
+
+      <!-- Joint position publisher — so controller can read current angles -->
+      <plugin filename="gz-sim-joint-state-publisher-system"
+              name="gz::sim::systems::JointStatePublisher"/>
+
+    </model>
+
+  </world>
+</sdf>

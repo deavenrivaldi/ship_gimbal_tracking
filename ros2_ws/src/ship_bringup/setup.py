@@ -12,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/ship_bringup']),
         ('share/ship_bringup', ['package.xml']),
+        
+        # register all launch files in the launch directory automatically
         ('share/ship_bringup/launch=', glob('ship_bringup/*.py')),
     ],
     install_requires=['setuptools'],

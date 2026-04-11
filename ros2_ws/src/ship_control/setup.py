@@ -8,8 +8,8 @@ setup(
     packages=find_packages(exclude=['test']),
     data_files=[
         ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
+            ['resource/ship_control']),
+        ('share/ship_control', ['package.xml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,6 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'gimbal_controller_node = ship_control.gimbal_controller_node:main',
+            'imu_stabilizer_node = ship_control.imu_stabilizer_node:main'
         ],
     },
 )
