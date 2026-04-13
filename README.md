@@ -1,79 +1,123 @@
-## workflow with github:
+## Github Workflow
+```
 git pull # work on ROS2 packages
-git add .
+git add
 git commit -m "update message"
 git push
-
-### create ros package 
-ros2 pkg create --build-type ament_python $package_name
-
-## folder structure & function:
+```
+## Folder Structure & Functions
+```
 ship_gimbal_tracking
 ros2_ws
-src
-ship_bringup (pkg) <- launcher
-ship_bringup
-camera_launch.py
-ship_control (pkg) <- control logic
-ship_vision (pkg) <- openCV / detection, camera processing
-ship_vision
-yolo_detection_node.py
-pixel_to_angle_node.py
-ship_description (pkg) <- URDF / robot model, sensors / joints
-ship_simulation (pkg) <- gz world, models, plugins
-worlds
-camera_world.sdf
-models
-external
+            src
+                        ship_bringup (pkg) <- launcher
+                                    ship_bringup
+                                                camera_launch.py
+                                                gimbal_launch.py
+                        ship_control (pkg) <- control logic
+                        ship_vision (pkg) <- openCV / detection, camera processing
+                                    ship_vision
+                                    yolo_detection_node.py
+                                    pixel_to_angle_node.py
+                                    plot_debug_node.py
+                                    fg_plot_debug_node.py
+                        ship_description (pkg) <- URDF / robot model, sensors / joints
+                        ship_simulation (pkg) <- gz world, models, plugins
+                                    worlds
+                                                camera_world.sdf
+                                                gimbal_world.sdf
+                                    models
+                                    external
 
             build
             install
             log
-        ship_gimbal     <- python venv
-        .gitignore
-        README.md
+ship_gimbal     <- python venv folder
+.gitignore
+README.md
+```
+### Create New ROS Package
+Inside the ros2_ws/src folder, run in the terminal
+```
+ros2 pkg create --build-type ament_python $package_name
+```
+> change $package_name with the name of package you want to create (e.g., ship_bringup)
 
-python virtual environment: ship_gimbal
-activate venv: source ship_gimbal/bin/activate
+## Python Framework
 
-python libraries:
+**python virtual environment:** ship_gimbal  
+activate venv before launching ROS 2 by running in terminal
+```
+cd ~/projects/ship_gimbal_tracking
+source ship_gimbal/bin/activate
+```
 
-### reset colcon
+# ROS 2 Framework
+
+### Reset Colcon
+If the project breaks, reset colcon and build it again
+```
 cd ~/projects/ship_gimbal_tracking/ros2_ws
 rm -rf build install log
-
-### build workspace
+```
+### Build Workspace
+after every update, rebuild workspace by running in terminal
+```
 cd ~/projects/ship_gimbal_tracking/ros2_ws
 source /opt/ros/jazzy/setup.bash
 colcon build
 colcon build --symlink-install --packages-select ship_vision
 source install/setup.bash
+```
 
-# launcher:
+## World Launcher:
 
-## Camera_world:
+### Launch with NVIDIA CUDA
+after building workspace run
+```
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
-ros2 launch ship_bringup camera_launch.py
-
-### launching with AMD GPU
+ros2 launch ship_bringup $XXX_launch.py
+```
+or 
+### Launch with AMD GPU
+```
 export HSA_OVERRIDE_GFX_VERSION=10.3.0
-ros2 launch ship_bringup camera_launch.py
+ros2 launch ship_bringup $XXX_launch.py
+```
+> change $XXX with the world that you want to launch {camera, gimbal}
 
-## debut_plot:
+## Debugging
+### Target Position Debug Plot (vision node):
+Open a new terminal and run
+```
+cd ~/projects/ship_gimbal_tracking/ros2_ws
+source /opt/ros/jazzy/setup.bash
+source install/setup.bash
 ros2 run ship_vision plot_debug_node
+```
 
-## verification:
+### Foxglove Dashhboard (vision node):
+In Foxglove open a new image window and change the topic to
+```
+/debug/image
+```
+
+### Nodes and Topics Verification:
+Open a new terminal and run
+```
+cd ~/projects/ship_gimbal_tracking/ros2_ws
 source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 ros2 node list
 ros2 topic list
+```
 
-### expected nodes:
+#### Expected Nodes:
     /yolo_detection_node
     /pixel_to_angle_node
     /foxglove_bridge
 
-### expected topics:
+#### Expected Topics:
     /camera/image_raw
     /target/pixel_center
     /gimbal/angle_command
