@@ -46,10 +46,24 @@ ros2 pkg create --build-type ament_python $package_name
 ## Python Framework
 
 **python virtual environment:** ship_gimbal  
+create new venv
+```
+cd ~/projects/ship_gimbal_tracking
+python3 -m venv ship_gimbal
+```
+
 activate venv before launching ROS 2 by running in terminal
 ```
 cd ~/projects/ship_gimbal_tracking
 source ship_gimbal/bin/activate
+```
+### Libraries 
+```
+numpy               => pip install "numpy<2"
+matplotlib          => pip install matplotlib
+torch, torchvision  => pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
+opencv              => pip install opencv-python
+yolo                => pip install -U ultralytics
 ```
 
 # ROS 2 Framework
