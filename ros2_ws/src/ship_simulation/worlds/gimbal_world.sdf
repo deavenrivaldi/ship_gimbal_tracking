@@ -23,8 +23,10 @@
     <plugin filename="gz-sim-user-commands-system"
             name="gz::sim::systems::UserCommands"/>
 
+    <!-- check fixing
     <plugin filename="gz-sim-joint-state-publisher-system"
             name="gz::sim::systems::JointStatePublisher"/>
+    -->
 
     <plugin filename="gz-sim-imu-system"
             name="gz::sim::systems::Imu"/>

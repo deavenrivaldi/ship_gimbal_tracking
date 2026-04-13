@@ -61,13 +61,22 @@ def generate_launch_description():
         
 
         # ------- 4. ROS-Gazebo IMU bridge -------
-        #TimerAction(period=5.0, actions=[
+        TimerAction(period=5.0, actions=[
+            Node(
+                package='ros_gz_bridge',
+                executable='parameter_bridge',
+                arguments=[
+                '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU'
+                ],
+                output='screen'
+            ),
+        ]),
+        
+        # ------- 5. YOLO detection node -------
+        #TimerAction(period=7.0, actions=[
         #    Node(
-        #        package='ros_gz_bridge',
-        #        executable='parameter_bridge',
-        #        arguments=[
-        #            '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU'
-        #        ],
+        #        package='ship_vision',
+        #        executable='yolo_detection_node',
         #        output='screen'
         #    ),
         #]),
@@ -77,15 +86,6 @@ def generate_launch_description():
                 package='ship_vision',
                 executable=venv_python,
                 arguments=[os.path.join(pkg_vis_share, 'yolo_detection_node.py')],
-                output='screen'
-            ),
-        ]),
-        
-        # ------- 5. YOLO detection node -------
-        TimerAction(period=7.0, actions=[
-            Node(
-                package='ship_vision',
-                executable='yolo_detection_node',
                 output='screen'
             ),
         ]),
