@@ -103,9 +103,11 @@ colcon build --symlink-install --packages-select ship_vision
 source install/setup.bash
 ```
 ## export:
+```
 export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
 export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+```
 
 ## World Launcher:
 
