@@ -9,3 +9,9 @@ ros2_ws/log/
 *.tar.gz
 __pycache__/
 .vscode/
+
+# yolo grogram
+yolov8n/
+
+# Zone.Identifier ( windows 認證 )
+*Zone.Identifier

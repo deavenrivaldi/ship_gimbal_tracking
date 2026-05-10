@@ -22,6 +22,47 @@
 
     <plugin filename="gz-sim-user-commands-system"
             name="gz::sim::systems::UserCommands"/>
+            
+    <include>
+      <name>Coast Waves</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>file:///home/wuru/projects/ship_gimbal_tracking/ros2_ws/src/coast_waves</uri>
+    </include>
+
+    <!-- The wave field -->
+    <plugin filename="libPublisherPlugin.so" name="maritime::PublisherPlugin">
+      <message type="gz.msgs.Param" topic="/gazebo/wavefield/parameters"
+               every="2.0">
+        params {
+          key: "direction"
+          value {
+            type: DOUBLE
+            double_value: 0.0
+          }
+        }
+        params {
+          key: "gain"
+          value {
+            type: DOUBLE
+            double_value: 0.2
+          }
+        }
+        params {
+          key: "period"
+          value {
+            type: DOUBLE
+            double_value: 1
+          }
+        }
+        params {
+          key: "steepness"
+          value {
+            type: DOUBLE
+            double_value: 0.1
+          }
+        }
+      </message>
+    </plugin>
 
     <!-- check fixing
     <plugin filename="gz-sim-joint-state-publisher-system"
@@ -41,24 +82,7 @@
       <direction>-0.5 0.1 -0.9</direction>
     </light>
 
-    <!-- Ground plane -->
-    <model name="ground_plane">
-      <static>true</static>
-      <link name="link">
-        <collision name="collision">
-          <geometry><plane><normal>0 0 1</normal></plane></geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <plane><normal>0 0 1</normal><size>100 100</size></plane>
-          </geometry>
-          <material>
-            <ambient>0.8 0.8 0.8 1</ambient>
-            <diffuse>0.8 0.8 0.8 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
+
 
     <!-- ===== WALKING PERSON ACTOR ===== -->
     <actor name="walking_person">
@@ -314,6 +338,11 @@
               name="gz::sim::systems::JointStatePublisher"/>
 
     </model>
+    <include>
+      <name>wam-v</name>
+      <pose>10 0 0 0 0 1</pose>
+      <uri>file:///home/wuru/projects/ship_gimbal_tracking/ros2_ws/src/wam-v</uri>
+    </include>
 
   </world>
 </sdf>

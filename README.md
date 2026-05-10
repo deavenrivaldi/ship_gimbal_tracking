@@ -1,5 +1,3 @@
-This project is developed in Ubuntu 24.04, using ROS 2 Jazzy and Gazebo Harmonics
-
 ## Github Workflow
 
 ```
@@ -77,7 +75,6 @@ matplotlib          => pip install matplotlib
 torch, torchvision  => pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
 opencv              => pip install opencv-python
 yolo                => pip install -U ultralytics
-foxglove            => pip install foxglove-sdk
 ```
 
 # ROS 2 Framework
@@ -114,8 +111,6 @@ export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
 ros2 launch ship_bringup $XXX_launch.py
 ```
 
-> Make sure Nvidia driver is already appropriately installed 
-
 or
 
 ### Launch with AMD GPU
@@ -128,20 +123,6 @@ ros2 launch ship_bringup $XXX_launch.py
 > change $XXX with the world that you want to launch {camera, gimbal}
 
 ## Debugging
-This project utilizes foxglove app for Debugging and dashboard
-
-### Setting up Foxglove
-download from: https://foxglove.dev/download and run in terminal to install foxglove
-
-```
-sudo apt install ./foxglove-studio-*.deb
-```
-
-setup communication bridge between ROS and foxglove by running
-
-```
-sudo apt install ros-jazzy-foxglove-bridge
-```
 
 ### Target Position Debug Plot (vision node):
 
