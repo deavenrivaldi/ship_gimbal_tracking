@@ -126,6 +126,8 @@ ros2 launch ship_bringup $XXX_launch.py
 ```
 # 務必確保 .bash 路徑有正確指到當前資料夾 setup_env.bash
 source ~/ship_gimbal_tracking/ship_gimbal_tracking/setup_env.bash
+
+export HSA_OVERRIDE_GFX_VERSION=10.3.0
 ros2 launch ship_bringup gimbal_launch.py
 ```
 
