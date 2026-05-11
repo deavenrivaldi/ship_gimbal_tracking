@@ -15,3 +15,6 @@ yolov8n/
 
 # Zone.Identifier ( windows 認證 )
 *Zone.Identifier
+
+# build plguin folder 
+ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/build/
