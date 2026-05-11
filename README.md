@@ -124,6 +124,7 @@ ros2 launch ship_bringup $XXX_launch.py
 
 #### Launch in gimbal_with_camera
 ```
+cd ros2_ws
 export HSA_OVERRIDE_GFX_VERSION=10.3.0
 ros2 launch ship_bringup gimbal_launch.py
 ```

@@ -22,6 +22,13 @@ def generate_launch_description():
     pkg_sim_share = get_package_share_directory('ship_simulation')
     models_path = os.path.join(pkg_sim_share, 'models')
 
+    # add plgin search path : ship_gimbal_tracking/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
+    current_file_dir = os.path.dirname(os.path.realpath(__file__))
+    plugin_path = os.path.abspath(os.path.join(current_file_dir, '../../../../../src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib'))
+    # corrention to plugin path
+    if not os.path.exists(plugin_path):
+        print(f"警告：找不到插件路徑 {plugin_path}")
+
     pkg_vis_share = get_package_share_directory('ship_vision')
     project_root = os.path.abspath(os.path.join(pkg_vis_share, '../../../../..'))
 
@@ -30,7 +37,9 @@ def generate_launch_description():
     return LaunchDescription([
         
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', 
-                               value=models_path),        
+                               value=models_path), 
+        SetEnvironmentVariable('GZ_SIM_SYSTEM_PLUGIN_PATH', 
+                               value=plugin_path),     
 
         # ------- 1. Gazebo -------
         ExecuteProcess(
