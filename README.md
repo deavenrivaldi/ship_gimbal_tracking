@@ -122,6 +122,13 @@ ros2 launch ship_bringup $XXX_launch.py
 
 > change $XXX with the world that you want to launch {camera, gimbal}
 
+#### Launch in gimbal_with_camera
+```
+# 務必確保 .bash 路徑有正確指到當前資料夾 setup_env.bash
+source ~/ship_gimbal_tracking/ship_gimbal_tracking/setup_env.bash
+ros2 launch ship_bringup gimbal_launch.py
+```
+
 ## Debugging
 
 ### Target Position Debug Plot (vision node):

@@ -26,7 +26,7 @@
     <include>
       <name>Coast Waves</name>
       <pose>0 0 0 0 0 0</pose>
-      <uri>file:///home/wuru/projects/ship_gimbal_tracking/ros2_ws/src/coast_waves</uri>
+      <uri>model://coast_waves</uri>
     </include>
 
     <!-- The wave field -->
@@ -341,7 +341,7 @@
     <include>
       <name>wam-v</name>
       <pose>10 0 0 0 0 1</pose>
-      <uri>file:///home/wuru/projects/ship_gimbal_tracking/ros2_ws/src/wam-v</uri>
+      <uri>model://wam-v</uri>
     </include>
 
   </world>
