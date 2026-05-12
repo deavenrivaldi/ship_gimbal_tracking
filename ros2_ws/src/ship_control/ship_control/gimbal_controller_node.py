@@ -13,6 +13,7 @@ Combined control logic:
 
 import rclpy
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from builtin_interfaces.msg import Duration
 from geometry_msgs.msg import Vector3
 from sensor_msgs.msg import JointState
@@ -40,6 +41,11 @@ class GimbalControllerNode(Node):
     def __init__(self):
         super().__init__('gimbal_controller_node')
 
+        # --- 1. 參數配置 (可在啟動時透過 yaml 或命令列覆蓋) ---
+        self.declare_parameter('gimbal_yaw', 0.0)
+        self.declare_parameter('gimbal_pitch', 0.0)
+        self.declare_parameter('gimbal_roll', 0.0)
+
         # Vision inputs (from pixel_to_angle)
         self.pan_cmd  = 0.0
         self.tilt_cmd = 0.0
@@ -58,27 +64,39 @@ class GimbalControllerNode(Node):
 
         self.last_time = self.get_clock().now()
 
+        # continuous ratation
+        self.add = {
+            'yaw_joint': True,
+            'pitch_joint': True,
+            'roll_joint': True,
+        }
+        
+        # Gimbal rotation direction flags
+        self.yaw_add = True
+        self.pitch_add = True
+        self.roll_add = True
+
         # ------- Subscribers -------
-        self.sub_vision = self.create_subscription(
-            Vector3,
-            '/gimbal/angle_command',
-            self.vision_callback,
-            10
-        )
+        # self.sub_vision = self.create_subscription(
+        #     Vector3,
+        #     '/gimbal/angle_command',
+        #     self.vision_callback,
+        #     10
+        # )
 
-        self.sub_imu = self.create_subscription(
-            Vector3,
-            '/gimbal/roll_correction',
-            self.imu_correction_callback,
-            10
-        )
+        # self.sub_imu = self.create_subscription(
+        #     Vector3,
+        #     '/gimbal/roll_correction',
+        #     self.imu_correction_callback,
+        #     10
+        # )
 
-        self.sub_joints = self.create_subscription(
-            JointState,
-            '/world/gimbal_world/model/gimbal/joint_state',
-            self.joint_state_callback,
-            10
-        )
+        # self.sub_joints = self.create_subscription(
+        #     JointState,
+        #     '/world/gimbal_world/model/gimbal/joint_state',
+        #     self.joint_state_callback,
+        #     10
+        # )
 
         # ------- Publishers -------
         self.pub_trajectory = self.create_publisher(
@@ -88,7 +106,8 @@ class GimbalControllerNode(Node):
         )
 
         # Control loop at 20Hz
-        self.timer = self.create_timer(0.05, self.control_loop)
+        # self.timer = self.create_timer(0.05, self.control_loop)
+        self.timer = self.create_timer(0.2, self.test_loop)
 
         self.get_logger().info(
             f'✅ GimbalControllerNode ready!\n'
@@ -163,18 +182,31 @@ class GimbalControllerNode(Node):
         tilt_error = tilt_error if abs(math.degrees(tilt_error)) > DEADBAND_DEG else 0.0
         roll_error = roll_error if abs(math.degrees(roll_error)) > DEADBAND_DEG else 0.0
 
-        if self.vision_active or self.imu_active:
-            self.target_positions['yaw_joint']   = self.current_positions['yaw_joint']   + pan_error
-            self.target_positions['pitch_joint'] = self.current_positions['pitch_joint'] + tilt_error
-            self.target_positions['roll_joint']  = self.current_positions['roll_joint']  + roll_error
-        else:
-            self.target_positions = dict(self.current_positions)
+        # Update target positions based on errors
+        yaw_target = self.get_parameter('gimbal_yaw').value + pan_error
+        pitch_target = self.get_parameter('gimbal_pitch').value + tilt_error
+        roll_target = self.get_parameter('gimbal_roll').value + roll_error
 
-        for name in self.JOINT_NAMES:
-            lower, upper = self.JOINT_LIMITS[name]
-            self.target_positions[name] = max(lower, min(upper, self.target_positions[name]))
+        # Apply joint limits
+        yaw_target = max(self.JOINT_LIMITS['yaw_joint'][0], min(self.JOINT_LIMITS['yaw_joint'][1], yaw_target))
+        pitch_target = max(self.JOINT_LIMITS['pitch_joint'][0], min(self.JOINT_LIMITS['pitch_joint'][1], pitch_target))
+        roll_target = max(self.JOINT_LIMITS['roll_joint'][0], min(self.JOINT_LIMITS['roll_joint'][1], roll_target))
 
-        trajectory = self.build_trajectory(self.target_positions, self.TIME_FROM_START)
+        # Update parameters
+        new_params = [
+            Parameter('gimbal_yaw', Parameter.Type.DOUBLE, yaw_target),
+            Parameter('gimbal_pitch', Parameter.Type.DOUBLE, pitch_target),
+            Parameter('gimbal_roll', Parameter.Type.DOUBLE, roll_target)
+        ]
+        self.set_parameters(new_params)
+
+        # Build and publish trajectory
+        positions = {
+            'yaw_joint': yaw_target,
+            'pitch_joint': pitch_target,
+            'roll_joint': roll_target
+        }
+        trajectory = self.build_trajectory(positions, self.TIME_FROM_START)
         self.pub_trajectory.publish(trajectory)
 
         self.get_logger().info(
@@ -186,6 +218,54 @@ class GimbalControllerNode(Node):
             throttle_duration_sec=0.5
         )
 
+
+    def test_loop(self):
+        """Test gimbal continuous rotation within joint limits."""
+        deg = 0.05  # 0.05 radians per cycle
+
+        # Calculate target positions with continuous rotation
+        yaw_target = self.get_parameter('gimbal_yaw').value + (deg if self.yaw_add else -deg)
+        pitch_target = self.get_parameter('gimbal_pitch').value + (deg if self.pitch_add else -deg)
+        roll_target = self.get_parameter('gimbal_roll').value + (deg if self.roll_add else -deg)
+
+        # Check and apply joint limits with direction reversal
+        if yaw_target > self.JOINT_LIMITS['yaw_joint'][1] or yaw_target < self.JOINT_LIMITS['yaw_joint'][0]:
+            self.yaw_add = not self.yaw_add
+        if pitch_target > self.JOINT_LIMITS['pitch_joint'][1] or pitch_target < self.JOINT_LIMITS['pitch_joint'][0]:
+            self.pitch_add = not self.pitch_add
+        if roll_target > self.JOINT_LIMITS['roll_joint'][1] or roll_target < self.JOINT_LIMITS['roll_joint'][0]:
+            self.roll_add = not self.roll_add
+
+        # Clamp target positions to joint limits
+        yaw_target = max(self.JOINT_LIMITS['yaw_joint'][0], min(self.JOINT_LIMITS['yaw_joint'][1], yaw_target))
+        pitch_target = max(self.JOINT_LIMITS['pitch_joint'][0], min(self.JOINT_LIMITS['pitch_joint'][1], pitch_target))
+        roll_target = max(self.JOINT_LIMITS['roll_joint'][0], min(self.JOINT_LIMITS['roll_joint'][1], roll_target))
+
+        # Update parameters
+        new_params = [
+            Parameter('gimbal_yaw', Parameter.Type.DOUBLE, yaw_target),
+            Parameter('gimbal_pitch', Parameter.Type.DOUBLE, pitch_target),
+            Parameter('gimbal_roll', Parameter.Type.DOUBLE, roll_target)
+        ]
+        self.set_parameters(new_params)
+
+        # Build trajectory command
+        positions = {
+            'yaw_joint': yaw_target,
+            'pitch_joint': pitch_target,
+            'roll_joint': roll_target
+        }
+        trajectory = self.build_trajectory(positions, self.TIME_FROM_START)
+        self.pub_trajectory.publish(trajectory)
+
+        # Update and log current target positions
+        self.target_positions = positions
+        self.get_logger().info(
+            f'yaw_joint:{math.degrees(self.target_positions['yaw_joint']):+.1f}° '
+            f'pitch_joint:{math.degrees(self.target_positions['pitch_joint']):+.1f}° '
+            f'roll_joint:{math.degrees(self.target_positions['roll_joint']):+.1f}°',
+            throttle_duration_sec=0.5
+        )
 
 def main(args=None):
     rclpy.init(args=args)

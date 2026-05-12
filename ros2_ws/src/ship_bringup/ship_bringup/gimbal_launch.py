@@ -13,6 +13,21 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
+    # gimbal bridge 
+     # 定義 Bridge Node
+    bridge_node = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='gimbal_bridge',
+        output='screen',
+        # 這就是你的「直接寫死」指令：Topic@ROS_Type@GZ_Type
+        arguments=[
+            '/gimbal/joint_trajectory@trajectory_msgs/msg/JointTrajectory@gz.msgs.JointTrajectory'
+        ],
+        # 如果有其他參數需要橋接，可以在 arguments 列表裡繼續增加
+        # 例如: '/gimbal/joint_state@sensor_msgs/msg/JointState@gz.msgs.Model'
+    )
+    
     world_file = os.path.join(
         get_package_share_directory('ship_simulation'),
         'worlds',
@@ -35,6 +50,7 @@ def generate_launch_description():
     venv_python = os.path.join(project_root, 'ship_gimbal', 'bin', 'python3')  
 
     return LaunchDescription([
+        bridge_node,
         
         SetEnvironmentVariable('GZ_SIM_RESOURCE_PATH', 
                                value=models_path), 
