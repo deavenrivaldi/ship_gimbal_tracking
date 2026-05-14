@@ -40,6 +40,7 @@ class YoloDetectionNode(Node):
         super().__init__('yolo_detection_node')
 
         # --- GPU setup (NVIDIA CUDA ONLY)---
+        
         if torch.cuda.is_available():
             self.get_logger().info(
                 f'🚀 GPU detected: {torch.cuda.get_device_name(0)} — using CUDA')
