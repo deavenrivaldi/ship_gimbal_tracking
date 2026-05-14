@@ -19,6 +19,11 @@
             name="gz::sim::systems::Sensors">
       <render_engine>ogre2</render_engine>
     </plugin>
+    <plugin
+        filename="libgz-sim-imu-system.so"
+        name="ignition::gazebo::systems::Imu">
+    </plugin>
+<!-- 如果是最新的 Gazebo Harmonic，檔名可能是 libgz-sim-imu-system.so -->
 
     <plugin filename="gz-sim-user-commands-system"
             name="gz::sim::systems::UserCommands"/>

@@ -23,281 +23,211 @@
             </inertia>
           </inertial>
 
+          <sensor name="imu_sensor" type="imu">
+              <always_on>1</always_on>
+              <update_rate>100</update_rate> <!-- 建議提高頻率，例如 100 Hz -->
+              <visualize>true</visualize>
+              <topic>imu</topic>
+              
+              <!-- 加入這個 Plugin 才能把數值回傳給 ROS 2 -->
+              <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                  <ros>
+                      <namespace>/</namespace>
+                      <!-- 這裡設定你要回傳數值的 Topic 名稱 -->
+                      <remapping>~/out:=imu_data</remapping>
+                  </ros>
+                  <initial_orientation_as_reference>false</initial_orientation_as_reference>
+              </plugin>
+          </sensor>
+
           <visual name="capstone_visual">
             <geometry>
               <mesh><uri>capstone_boat/Assembly 1.dae</uri></mesh>
             </geometry>
           </visual>
+
+          <!-- [新增] 人的模型，當作船的一部分 -->
+          <visual name="person_visual">
+            <!-- 調整這個 pose 來決定人站在船上的哪個位置 -->
+            <pose>0 0 0.95 0 0 3.1416</pose> 
+            <geometry>
+              <mesh><uri>model://walking_person/meshes/walk.dae</uri></mesh>
+            </geometry>
+          </visual>
                     <!-- Top base -->
 
 
+        <visual name="buoy_vis_L01">
+          <pose>-0.19043630 0.06460338 -0.10472894 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L02">
+          <pose>-0.14043761 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L03">
+          <pose>-0.23631474 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 3. 追加點位 (中段穩定輔助點) -->
+        <visual name="buoy_vis_L04">
+          <pose>-0.190947 0.065603 -0.095727 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L05">
+          <pose>-0.228274 0.065603 -0.079947 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L06">
+          <pose>-0.236825 0.065603 -0.079562 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 4. 追加點位 (船尾後段) -->
+        <visual name="buoy_vis_L07">
+          <pose>-0.167225 0.424603 -0.000871 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L08">
+          <pose>-0.205226 0.424603 0.000852 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 5. 追加點位 (船身前段) -->
+        <visual name="buoy_vis_L09">
+          <pose>-0.188376 -0.375397 0.004255 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L10">
+          <pose>-0.186288 -0.175397 -0.090736 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L11">
+          <pose>-0.235550 -0.175397 -0.078163 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L12">
+          <pose>-0.141203 -0.175397 -0.075331 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+        <visual name="buoy_vis_L13">
+          <pose>-0.190488 -0.055397 -0.102620 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L14">
+          <pose>-0.137477 -0.055397 -0.091443 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L15">
+          <pose>-0.239275 -0.055397 -0.082611 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+
+        <!-- === 右舷 (Right) 鏡射視覺點位 === -->
         <!-- 1. 初始點位 (船身中段基礎) -->
-            <visual name="test_p1">
-            <pose>-0.19043630 0.06460338 -0.10472894 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p2">
-            <pose>-0.15260254 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p3">
-            <pose>-0.22776297 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p4">
-            <pose>-0.14043761 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p5">
-            <pose>-0.23631474 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
+        <visual name="buoy_vis_R01">
+          <pose>0.19043630 0.06460338 -0.10472894 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R02">
+          <pose>0.14043761 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R03">
+          <pose>0.23631474 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
 
+        <!-- 3. 追加點位 (中段穩定輔助點) -->
+        <visual name="buoy_vis_R04">
+          <pose>0.190947 0.065603 -0.095727 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R05">
+          <pose>0.228274 0.065603 -0.079947 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R06">
+          <pose>0.236825 0.065603 -0.079562 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
 
-          <!-- 3. 追加點位 (中後段穩定輔助點) -->
-          <visual name="test_p11_a">
-            <pose>-0.190947 0.065603 -0.095727 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p12_a">
-            <pose>-0.228274 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p13_a">
-            <pose>-0.236825 0.065603 -0.079562 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p14_a">
-            <pose>-0.153113 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p15_a">
-            <pose>-0.140948 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <!-- 4. 追加點位 (船尾後段) -->
-          <visual name="test_p16_a">
-            <pose>-0.190771 0.424603 -0.044745 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p17_a">
-            <pose>-0.221066 0.424603 -0.027699 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p18_a">
-            <pose>-0.155686 0.424603 -0.033281 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
+        <!-- 4. 追加點位 (船尾後段) -->
+        <visual name="buoy_vis_R07">
+          <pose>0.167225 0.424603 -0.000871 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R08">
+          <pose>0.205226 0.424603 0.000852 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
 
-          <!-- 5. 追加點位 (船身前段) -->
-          <visual name="test_p21_a">
-            <pose>-0.188376 -0.375397 0.004255 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p22_a">
-            <pose>-0.191673 -0.335397 -0.043745 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p23_a">
-            <pose>-0.155230 -0.335397 -0.029788 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p24_a">
-            <pose>-0.221523 -0.335397 -0.030158 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
-          <visual name="test_p25_a">
-            <pose>-0.190488 -0.055397 -0.102620 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p26_a">
-            <pose>-0.222523 -0.055397 -0.086555 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p27_a">
-            <pose>-0.156377 -0.055397 -0.093316 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p28_a">
-            <pose>-0.137477 -0.055397 -0.091443 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p29_a">
-            <pose>-0.239275 -0.055397 -0.082611 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
+        <!-- 5. 追加點位 (船身前段) -->
+        <visual name="buoy_vis_R09">
+          <pose>0.188376 -0.375397 0.004255 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R10">
+          <pose>0.186288 -0.175397 -0.090736 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R11">
+          <pose>0.235550 -0.175397 -0.078163 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R12">
+          <pose>0.141203 -0.175397 -0.075331 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
 
-          <!-- 7. 追加點位 (船身中後段細節與過渡區 2) -->
-          <visual name="test_p34_a">
-            <pose>-0.189756 0.184603 -0.079137 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p35_a">
-            <pose>-0.148793 0.184603 -0.055027 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p36_a">
-            <pose>-0.227959 0.184603 -0.050375 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
+        <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+        <visual name="buoy_vis_R13">
+          <pose>0.190488 -0.055397 -0.102620 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R14">
+          <pose>0.137477 -0.055397 -0.091443 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R15">
+          <pose>0.239275 -0.055397 -0.082611 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
 
-
-
-          <visual name="test_p1_mirror">
-            <pose>0.19043630 0.06460338 -0.10472894 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p2_mirror">
-            <pose>0.15260254 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p3_mirror">
-            <pose>0.22776297 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p4_mirror">
-            <pose>0.14043761 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p5_mirror">
-            <pose>0.23631474 0.06460338 -0.08894867 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          
-          
-          <visual name="test_p11_a_mirror">
-            <pose>0.190947 0.065603 -0.095727 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p12_a_mirror">
-            <pose>0.228274 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p13_a_mirror">
-            <pose>0.236825 0.065603 -0.079562 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p14_a_mirror">
-            <pose>0.153113 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p15_a_mirror">
-            <pose>0.140948 0.065603 -0.079947 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p16_a_mirror">
-            <pose>0.190771 0.424603 -0.044745 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p17_a_mirror">
-            <pose>0.221066 0.424603 -0.027699 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p18_a_mirror">
-            <pose>0.155686 0.424603 -0.033281 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          
-          <visual name="test_p21_a_mirror">
-            <pose>0.188376 -0.375397 0.004255 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p22_a_mirror">
-            <pose>0.191673 -0.335397 -0.043745 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p23_a_mirror">
-            <pose>0.155230 -0.335397 -0.029788 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p24_a_mirror">
-            <pose>0.221523 -0.335397 -0.030158 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p25_a_mirror">
-            <pose>0.190488 -0.055397 -0.102620 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p26_a_mirror">
-            <pose>0.222523 -0.055397 -0.086555 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p27_a_mirror">
-            <pose>0.156377 -0.055397 -0.093316 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p28_a_mirror">
-            <pose>0.137477 -0.055397 -0.091443 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p29_a_mirror">
-            <pose>0.239275 -0.055397 -0.082611 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-
-          <visual name="test_p34_a_mirror">
-            <pose>0.189756 0.184603 -0.079137 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p35_a_mirror">
-            <pose>0.148793 0.184603 -0.055027 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
-          <visual name="test_p36_a_mirror">
-            <pose>0.227959 0.184603 -0.050375 0 0 0</pose>
-            <geometry><sphere><radius>0.006</radius></sphere></geometry>
-            <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
-          </visual>
 
 
 
@@ -589,7 +519,12 @@
           <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
           <publish_link_pose>false</publish_link_pose>
           <publish_model_pose>true</publish_model_pose>
-          <update_frequency>10</update_frequency> </plugin>
+          <update_frequency>10</update_frequency> 
+          </plugin>
+
+          <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu">
+          </plugin>
 
     </model>
 </sdf>
