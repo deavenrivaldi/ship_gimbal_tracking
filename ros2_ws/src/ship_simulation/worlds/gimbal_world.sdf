@@ -66,6 +66,10 @@
 
     <plugin filename="gz-sim-imu-system"
             name="gz::sim::systems::Imu"/>
+    <plugin
+        filename="libgz-sim-imu-system.so"
+        name="ignition::gazebo::systems::Imu">
+    </plugin>
 
 
     <!-- Lighting -->
