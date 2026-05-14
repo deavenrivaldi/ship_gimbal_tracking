@@ -109,14 +109,14 @@ export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/wuru/p
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
 ```
 ## imu:
-'''
+```
 ros2 run ros_gz_bridge parameter_bridge /imu@sensor_msgs/msg/Imu@gz.msgs.IMU
 ros2 topic echo /imu
-'''
+```
 ## ship engine:
-'''
+```
 gz topic -t /model/wam-v/joint/left_engine_propeller_joint/cmd_thrust -m gz.msgs.Double -p "data: -10.0" & gz topic -t /model/wam-v/joint/right_engine_propeller_joint/cmd_thrust -m gz.msgs.Double -p "data: -10.0"
-'''
+```
 ## World Launcher:
 
 ### Launch with NVIDIA CUDA
