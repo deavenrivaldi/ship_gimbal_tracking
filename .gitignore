@@ -18,3 +18,8 @@ yolov8n/
 
 # build plguin folder 
 ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/build/
+
+# temp 
+*/build/
+*/install/
+*/log/
