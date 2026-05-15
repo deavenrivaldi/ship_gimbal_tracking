@@ -1,4 +1,0 @@
-gz_interface:
-  ros__parameters:
-    world_name: world_test
-    world_file: world_test.sdf

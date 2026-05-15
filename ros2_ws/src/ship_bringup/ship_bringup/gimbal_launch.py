@@ -5,6 +5,7 @@ Launches : Gazebo gimbal world + image bridge + vision nodes + gimbal controller
 """
 
 import os
+import yaml
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, TimerAction, SetEnvironmentVariable
 from launch_ros.actions import Node
@@ -15,27 +16,35 @@ def generate_launch_description():
 
     # gimbal bridge 
      # 定義 Bridge Node
+    pkg_ship_bringup = get_package_share_directory('ship_bringup')
+    bridge_file = os.path.join(
+        pkg_ship_bringup,
+        'config',
+        'ship_bridge.yaml'
+    )
+
+    with open(bridge_file, 'r') as f:
+        cfg = yaml.safe_load(f)
+
+    ros_params = cfg['gz_interface']['ros__parameters']
+    world_name = ros_params['world_name']
+    world_file = ros_params['world_file']
+
+    pkg_sim_share = get_package_share_directory('ship_simulation')
+    world_file_path = os.path.join(pkg_sim_share, 'worlds', world_file)
+    models_path = os.path.join(pkg_sim_share, 'models')
+
     bridge_node = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         name='gimbal_bridge',
         output='screen',
-        # 這就是你的「直接寫死」指令：Topic@ROS_Type@GZ_Type
         arguments=[
-            '/gimbal/joint_trajectory@trajectory_msgs/msg/JointTrajectory@gz.msgs.JointTrajectory'
+            '/gimbal/joint_trajectory@trajectory_msgs/msg/JointTrajectory@gz.msgs.JointTrajectory',
+            f'/world/{world_name}/create@ros_gz_interfaces/srv/SpawnEntity@gz.msgs.EntityFactory@gz.msgs.Boolean',
+            f'/world/{world_name}/wrench@ros_gz_interfaces/msg/EntityWrench@gz.msgs.EntityWrench',
         ],
-        # 如果有其他參數需要橋接，可以在 arguments 列表裡繼續增加
-        # 例如: '/gimbal/joint_state@sensor_msgs/msg/JointState@gz.msgs.Model'
     )
-    
-    world_file = os.path.join(
-        get_package_share_directory('ship_simulation'),
-        'worlds',
-        'gimbal_world.sdf'
-    )
-    
-    pkg_sim_share = get_package_share_directory('ship_simulation')
-    models_path = os.path.join(pkg_sim_share, 'models')
 
     # add plgin search path : ship_gimbal_tracking/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
     current_file_dir = os.path.dirname(os.path.realpath(__file__))
@@ -59,7 +68,7 @@ def generate_launch_description():
 
         # ------- 1. Gazebo -------
         ExecuteProcess(
-            cmd=['gz', 'sim', '-r', world_file],
+            cmd=['gz', 'sim', '-r', world_file_path],
             output='screen'
         ),
 
@@ -91,7 +100,7 @@ def generate_launch_description():
                 package='ros_gz_bridge',
                 executable='parameter_bridge',
                 arguments=[
-                '/imu/data@sensor_msgs/msg/Imu[gz.msgs.IMU'
+                    '/imu/data@sensor_msgs/msg/Imu@gz.msgs.IMU'
                 ],
                 output='screen'
             ),
@@ -147,7 +156,9 @@ def generate_launch_description():
             Node(
                 package='ship_control',
                 executable='gimbal_controller_node',
+                parameters=[bridge_file],
                 output='screen'
             ),
         ]),
+
     ])

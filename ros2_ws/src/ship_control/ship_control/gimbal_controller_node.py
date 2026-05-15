@@ -11,14 +11,20 @@ Combined control logic:
     roll_error = roll_correction      (IMU only — stabilization)
 """
 
+import os
+import math
+
 import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from builtin_interfaces.msg import Duration
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3,  Point
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-import math
+from ros_gz_interfaces.srv import SpawnEntity
+from ros_gz_interfaces.msg import EntityWrench, Entity
+from ship_msgs.srv import Fire
+from ament_index_python.packages import get_package_share_directory
 
 
 # ------- METADATA -------
@@ -45,6 +51,17 @@ class GimbalControllerNode(Node):
         self.declare_parameter('gimbal_yaw', 0.0)
         self.declare_parameter('gimbal_pitch', 0.0)
         self.declare_parameter('gimbal_roll', 0.0)
+        self.declare_parameter('world_name', 'gimbal_world')
+        self.declare_parameter('projectile_package', 'ship_simulation')
+        self.declare_parameter('projectile_sdf', 'models/bullet/projectile_sphere.sdf')
+
+        self.world_name = self.get_parameter('world_name').value
+        self.projectile_package = self.get_parameter('projectile_package').value
+        self.projectile_sdf = self.get_parameter('projectile_sdf').value
+        self.projectile_path = os.path.join(
+            get_package_share_directory(self.projectile_package),
+            self.projectile_sdf
+        )
 
         # Vision inputs (from pixel_to_angle)
         self.pan_cmd  = 0.0
@@ -75,6 +92,28 @@ class GimbalControllerNode(Node):
         self.yaw_add = True
         self.pitch_add = True
         self.roll_add = True
+
+        # Fire service and projectile spawn/wrench interface
+        self.fire_service = self.create_service(
+            Fire,
+            '/fire',
+            self.fire_callback
+        )
+
+        self.spawn_client = self.create_client(
+            SpawnEntity,
+            f'/world/{self.world_name}/create'
+        )
+        if not self.spawn_client.wait_for_service(timeout_sec=5.0):
+            self.get_logger().warning(f"SpawnEntity service not available at /world/{self.world_name}/create")
+
+        self.wrench_publisher = self.create_publisher(
+            EntityWrench,
+            f'/world/{self.world_name}/wrench',
+            10
+        )
+
+        self.pending_projectiles = {}
 
         # ------- Subscribers -------
         # self.sub_vision = self.create_subscription(
@@ -112,8 +151,83 @@ class GimbalControllerNode(Node):
         self.get_logger().info(
             f'✅ GimbalControllerNode ready!\n'
             f'   Publisher: /gimbal/joint_trajectory\n'
+            f'   Service: /fire\n'
             f'   Deadband: ±{DEADBAND_DEG}°'
         )
+
+
+    def fire_callback(self, request, response):
+        self.get_logger().info('Fire request received')
+
+        name = self.shoot_projectile(
+            request.position,
+            request.direction,
+            request.force
+        )
+
+        if name is None:
+            response.success = False
+            response.projectile_name = ''
+            return response
+
+        response.success = True
+        response.projectile_name = name
+        return response
+
+
+    def shoot_projectile(self, position: Point, direction: Vector3, force: float):
+        """
+        position: geometry_msgs.msg.Point
+        direction: geometry_msgs.msg.Vector3
+        force: float
+        """
+        if not os.path.exists(self.projectile_path):
+            self.get_logger().error(f'Projectile SDF not found: {self.projectile_path}')
+            return None
+
+        name = f'projectile_{self.get_clock().now().nanoseconds}'
+        spawn_request = SpawnEntity.Request()
+        spawn_request.entity_factory.sdf_filename = self.projectile_path
+        spawn_request.entity_factory.name = name
+        spawn_request.entity_factory.pose.position = position
+
+        future = self.spawn_client.call_async(spawn_request)
+        self.pending_projectiles[future] = {
+            'name': name,
+            'direction': direction,
+            'force': force,
+        }
+        future.add_done_callback(self.spawn_response_callback)
+        return name
+
+
+    def spawn_response_callback(self, future):
+        try:
+            result = future.result()
+        except Exception as exc:
+            self.get_logger().error(f'Projectile spawn failed: {exc}')
+            return
+
+        context = self.pending_projectiles.pop(future, None)
+        if context is None or not result.success:
+            self.get_logger().error('Spawn failed or missing spawn context')
+            return
+
+        name = context['name']
+        direction = context['direction']
+        force = context['force']
+
+        self.get_logger().info(f'Spawn OK: {name}')
+
+        wrench_msg = EntityWrench()
+        wrench_msg.entity.name = name
+        wrench_msg.entity.type = Entity.MODEL
+        wrench_msg.wrench.force.x = direction.x * force
+        wrench_msg.wrench.force.y = direction.y * force
+        wrench_msg.wrench.force.z = direction.z * force
+
+        self.wrench_publisher.publish(wrench_msg)
+        self.get_logger().info(f'Projectile {name} fired')
 
 
     def vision_callback(self, msg):
@@ -231,6 +345,7 @@ class GimbalControllerNode(Node):
         # Check and apply joint limits with direction reversal
         if yaw_target > self.JOINT_LIMITS['yaw_joint'][1] or yaw_target < self.JOINT_LIMITS['yaw_joint'][0]:
             self.yaw_add = not self.yaw_add
+            self.shoot_projectile(Point(x=0.0, y=0.0, z=0.0), Vector3(x=0.0, y=0.0, z=1.0), 150.0)
         if pitch_target > self.JOINT_LIMITS['pitch_joint'][1] or pitch_target < self.JOINT_LIMITS['pitch_joint'][0]:
             self.pitch_add = not self.pitch_add
         if roll_target > self.JOINT_LIMITS['roll_joint'][1] or roll_target < self.JOINT_LIMITS['roll_joint'][0]:
@@ -261,9 +376,9 @@ class GimbalControllerNode(Node):
         # Update and log current target positions
         self.target_positions = positions
         self.get_logger().info(
-            f'yaw_joint:{math.degrees(self.target_positions['yaw_joint']):+.1f}° '
-            f'pitch_joint:{math.degrees(self.target_positions['pitch_joint']):+.1f}° '
-            f'roll_joint:{math.degrees(self.target_positions['roll_joint']):+.1f}°',
+            f"yaw_joint:{math.degrees(self.target_positions['yaw_joint']):+.1f}° "
+            f"pitch_joint:{math.degrees(self.target_positions['pitch_joint']):+.1f}° "
+            f"roll_joint:{math.degrees(self.target_positions['roll_joint']):+.1f}°",
             throttle_duration_sec=0.5
         )
 

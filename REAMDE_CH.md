@@ -9,8 +9,10 @@
 2. **發射 (Launch)**：在指定的方向施加脈衝力，以模擬初始速度。
 
 ## 編譯
-```
+```bash
+rm -rf build/projectile_bringup
 colcon build --symlink-install --packages-select projectile_bringup
+source install/setup.bash
 ```
 
 ### 啟動系統
@@ -75,3 +77,23 @@ gz_interface:
 ```
 
 *注意：您可以調整 `force`（力）的參數，但我尚不確定這對您的專案是否有實際幫助。*
+
+# 系統合並名稱對應
+launch -> launch
+add .yaml to connect gimabl / shoot with py
+world -> world ✅
+models -> projectile_sphere.sdf ✅
+control -> gz_interface.py
+add msgs to define msg
+
+# 移植改動
+1. 新依賴套件
+```
+#在虛擬環境中安裝
+pip install empy lark catkin_pkg setuptools pyyaml jinja2 typeguard lxml
+```
+
+# 發射指令
+```
+ros2 service call /fire ship_msgs/srv/Fire "{position: {x: 0.0, y: 0.0, z: 1.0}, direction: {x: 20.0, y: 0.0, z: 2.0}, force: 150.0}"
+```

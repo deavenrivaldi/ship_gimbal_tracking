@@ -155,5 +155,10 @@
       <uri>model://wam-v</uri>
     </include>
     
+    <!-- projectile system -->
+    <!-- <gravity>0 0 -9.81</gravity> -->
+    <plugin filename="gz-sim-apply-link-wrench-system"
+        name="gz::sim::systems::ApplyLinkWrench">
+    </plugin>
   </world>
 </sdf>
