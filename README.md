@@ -101,9 +101,10 @@ source install/setup.bash
 ```
 ## export:
 ```
-export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
-export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/projects/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
 ```
 ## imu:
 ros2 run ros_gz_bridge parameter_bridge /imu@sensor_msgs/msg/Imu@gz.msgs.IMU
