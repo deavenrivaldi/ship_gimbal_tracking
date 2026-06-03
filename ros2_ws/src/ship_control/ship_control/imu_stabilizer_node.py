@@ -167,7 +167,7 @@ class ImuStabilizerNode(Node):
             f'Correction — '
             f'roll:{roll_correction:+.2f}°  '
             f'pitch:{pitch_correction:+.2f}°',
-            throttle_duration_sec=1.0
+            throttle_duration_sec=0.005
         )
 
 

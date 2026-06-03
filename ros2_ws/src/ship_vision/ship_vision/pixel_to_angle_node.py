@@ -11,10 +11,12 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Point, Vector3
 
+import time  # 🌟 1. 新增 time 模組
+
 # ------- CAMERA CONFIGURATION -------
 # Must match SDF <image> and <horizontal_fov> exactly
-CAMERA_WIDTH  = 640
-CAMERA_HEIGHT = 480
+CAMERA_WIDTH  = 1280
+CAMERA_HEIGHT = 720
 FOV_H_DEG     = 60.0
 FOV_V_DEG     = FOV_H_DEG * (CAMERA_HEIGHT / CAMERA_WIDTH)  # 45.0°
 
@@ -67,7 +69,9 @@ class PixelToAngleNode(Node):
 
 
     def pixel_callback(self, msg):
-        self.last_target_time = self.get_clock().now()
+
+        self.last_target_time = time.time()  # 🌟 2. 改用 time.time() 確保與大腦時鐘一致
+        #self.last_target_time = self.get_clock().now()
 
         if not self.target_active:
             self.get_logger().info('🟢 Target acquired — entering frame')
@@ -103,19 +107,24 @@ class PixelToAngleNode(Node):
                 f'Offset: ({offset_x:.0f}px, {offset_y:.0f}px) | '
                 f'pan={abs(pan_deg):.2f}° {pan_dir}  '
                 f'tilt={abs(tilt_deg):.2f}° {tilt_dir}',
-                throttle_duration_sec=0.5
+                #throttle_duration_sec=0.5
             )
         else:
             self.get_logger().info(
                 '✅ Target centered — within deadband',
-                throttle_duration_sec=1.0
+                #throttle_duration_sec=1.0
             )
 
 
     def check_timeout(self):
         if self.last_target_time is None:
             return
-        elapsed = (self.get_clock().now() - self.last_target_time).nanoseconds / 1e9
+        #elapsed = (self.get_clock().now() - self.last_target_time).nanoseconds / 1e9
+
+        # ✅ 改成這行（純 Python 的時間相減）：
+        elapsed = time.time() - self.last_target_time
+
+        
         if elapsed > NO_TARGET_TIMEOUT and self.target_active:
             self.target_active = False
             self.get_logger().info('🔴 Target lost — outside frame, no output')

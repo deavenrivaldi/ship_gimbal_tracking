@@ -1,199 +1,122 @@
-This project is developed in Ubuntu 24.04, using ROS 2 Jazzy and Gazebo Harmonics
+Here is the English translation of your README file:
 
-## Github Workflow
+# Ship Gimbal Tracking Project
 
-```
-git pull # work on ROS2 packages
-git add
-git commit -m "update message"
-git push
-```
+This project aims to train a ship-mounted gimbal for target tracking and prediction using Reinforcement Learning (PPO). The development environment is based on **Ubuntu 24.04**, **ROS 2 Jazzy**, and **Gazebo Harmonic**.
 
-## Folder Structure & Functions
+## 1. Prerequisites
+Ensure the following core frameworks are correctly installed on your system:
+*   **ROS 2 Jazzy Jalisco:** [Official Installation Guide](https://docs.ros.org/en/jazzy/Installation.html)
+*   **Gazebo Harmonic:** [Official Installation Guide](https://gazebosim.org/docs/harmonic/install)
 
-```
-ship_gimbal_tracking
-ros2_ws
-            src
-                        ship_bringup (pkg) <- launcher
-                                    ship_bringup
-                                                camera_launch.py
-                                                gimbal_launch.py
-                        ship_control (pkg) <- control logic
-                        ship_vision (pkg) <- openCV / detection, camera processing
-                                    ship_vision
-                                    yolo_detection_node.py
-                                    pixel_to_angle_node.py
-                                    plot_debug_node.py
-                                    fg_plot_debug_node.py
-                        ship_description (pkg) <- URDF / robot model, sensors / joints
-                        ship_simulation (pkg) <- gz world, models, plugins
-                                    worlds
-                                                camera_world.sdf
-                                                gimbal_world.sdf
-                                    models
-                                    external
-
-            build
-            install
-            log
-ship_gimbal     <- python venv folder
-.gitignore
-README.md
+**💡 Environment Verification:**
+```bash
+echo $ROS_DISTRO        # Expected output: jazzy
+gz sim --version        # Should display Harmonic (Sim 9) version information
 ```
 
-### Create New ROS Package
-
-Inside the ros2_ws/src folder, run in the terminal
-
+## 2. Folder Structure
+```text
+ship_gimbal_tracking/
+├── ros2_ws/                 # ROS 2 Workspace
+│   ├── src/
+│   │   ├── ship_bringup/    # Launchers
+│   │   ├── ship_control/    # RL training logic and environment
+│   │   ├── ship_vision/     # Image processing (YOLO/OpenCV/Debug)
+│   │   ├── ship_description/# URDF and model definitions
+│   │   ├── ship_msgs/       # ROS message definitions
+│   │   └── ship_simulation/ # Gazebo worlds and plugins
+├── README_CH.md             # README (Traditional Chinese version)
+└── README.md
 ```
-ros2 pkg create --build-type ament_python $package_name
-```
 
-> change $package_name with the name of package you want to create (e.g., ship_bringup)
+## 3. Setup
 
-## Python Framework
-
-**python virtual environment:** ship_gimbal  
-create new venv
-
-```
-cd ~/projects/ship_gimbal_tracking
+### 3.1.1 Create `ship_gimbal` Virtual Environment : for ROS 2
+Execute the following commands in the project root directory to create and activate the environment:
+```bash
+cd ~/ship/ship_gimbal_tracking/ # Adjust the path to your actual project directory
 python3 -m venv ship_gimbal
-```
-
-activate venv before launching ROS 2 by running in terminal
-
-```
-cd ~/projects/ship_gimbal_tracking
 source ship_gimbal/bin/activate
 ```
 
-### Libraries
-
-```
-numpy               => pip install "numpy<2"
-matplotlib          => pip install matplotlib
-torch, torchvision  => pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
-opencv              => pip install opencv-python
-yolo                => pip install -U ultralytics
-foxglove            => pip install foxglove-sdk
+### 3.1.2 Install System Dependencies for `ship_gimbal` : for ROS 2
+Ensure ROS 2 Jazzy is installed. Then, install the necessary core Python dependencies:
+```bash
+pip install "numpy<2" matplotlib opencv-python ultralytics foxglove-sdk
+# For GPU computing, install the appropriate Torch version based on your hardware architecture
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
 ```
 
-# ROS 2 Framework
-
-### Reset Colcon
-
-If the project breaks, reset colcon and build it again
-
+### 3.2.1 Create `rl_env` Virtual Environment : for PPO
+Execute the following commands in the project root directory to create and activate the environment:
+```bash
+cd ~/ship/ship_gimbal_tracking/ # Adjust the path to your actual project directory
+python3 -m venv rl_env
+source rl_env/bin/activate
 ```
-cd ~/projects/ship_gimbal_tracking/ros2_ws
+
+### 3.2.2 Install System Dependencies for `rl_env` : for PPO
+Ensure ROS 2 Jazzy is installed. Then, install the necessary core Python dependencies:
+```bash
+pip install stable-baselines3[extra] gymnasium numpy pyyaml setuptools
+# For GPU computing, install the appropriate Torch version based on your hardware architecture
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
+```
+
+## 4. Build & Workflow
+
+### 4.1 Workspace Management
+If you encounter errors, clean and rebuild the workspace:
+```bash
+cd ~/ship/ship_gimbal_tracking/ros2_ws # Adjust the path to your actual project directory
 rm -rf build install log
-```
-
-### Build Workspace
-
-after every update, rebuild workspace by running in terminal
-
-```
-cd ~/projects/ship_gimbal_tracking/ros2_ws
 source /opt/ros/jazzy/setup.bash
-colcon build
-colcon build --symlink-install --packages-select ship_vision
+colcon build --symlink-install
 source install/setup.bash
 ```
 
-## World Launcher:
+## 5. RL Workflow
+Open three separate terminals and proceed as follows:
 
-### Launch with NVIDIA CUDA
+### Terminal 1: Start Simulation
+This window loads the Gazebo world and initializes the system plugins.
+```bash
+cd ~/ship/ship_gimbal_tracking/ # Adjust path
+source /opt/ros/jazzy/setup.bash
+source ros2_ws/install/setup.bash
 
-after building workspace run
-
-```
+# Set environment variables
+export PROJECT_ROOT=$PWD
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:$PROJECT_ROOT/ros2_ws/install/lib:$PROJECT_ROOT/ros2_ws/install/gazebo_maritime/lib
+export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:$PROJECT_ROOT/ros2_ws/install/lib:/$PROJECT_ROOT/ros2_ws/install/gazebo_maritime/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PROJECT_ROOT/ros2_ws/install/lib:$PROJECT_ROOT/ros2_ws/install/gazebo_maritime/lib:$PROJECT_ROOT/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
 export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
-ros2 launch ship_bringup $XXX_launch.py
+
+# Build and Launch
+cd ros2_ws
+colcon build --symlink-install --packages-select ship_vision
+ros2 launch ship_bringup gimbal_launch.py
 ```
 
-> Make sure Nvidia driver is already appropriately installed 
-
-or
-
-### Launch with AMD GPU
-
-```
-export HSA_OVERRIDE_GFX_VERSION=10.3.0
-ros2 launch ship_bringup $XXX_launch.py
-```
-
-> change $XXX with the world that you want to launch {camera, gimbal}
-
-## Debugging
-This project utilizes foxglove app for Debugging and dashboard
-
-### Setting up Foxglove
-download from: https://foxglove.dev/download and run in terminal to install foxglove
-
-```
-sudo apt install ./foxglove-studio-*.deb
-```
-
-setup communication bridge between ROS and foxglove by running
-
-```
-sudo apt install ros-jazzy-foxglove-bridge
-```
-
-### Target Position Debug Plot (vision node):
-
-Open a new terminal and run
-
-```
-cd ~/projects/ship_gimbal_tracking/ros2_ws
+### Terminal 2: Monitor Sensors
+Used to verify the target contact status.
+```bash
+cd ~/ship/ship_gimbal_tracking/ # Adjust path
 source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-ros2 run ship_vision plot_debug_node
+source ros2_ws/install/setup.bash
+gz topic -e -t /world/gimbal_world/model/wamv/link/person_link/sensor/person_contact/contact
 ```
 
-### Foxglove Dashhboard (vision node):
-
-In Foxglove open a new image window and change the topic to
-
-```
-/debug/image
-```
-
-### Nodes and Topics Verification:
-
-Open a new terminal and run
-
-```
-cd ~/projects/ship_gimbal_tracking/ros2_ws
+### Terminal 3: Execute Training
+Start the PPO training process.
+```bash
+cd ~/ship/ship_gimbal_tracking/ # Adjust path
 source /opt/ros/jazzy/setup.bash
-source install/setup.bash
-ros2 node list
-ros2 topic list
+source ros2_ws/install/setup.bash
+source rl_env/bin/activate
+python3 ros2_ws/src/ship_control/ship_control/train_ppo.py
 ```
 
-#### Expected Nodes:
-
-    /yolo_detection_node
-    /pixel_to_angle_node
-    /foxglove_bridge
-
-#### Expected Topics:
-
-    /camera/image_raw
-    /target/pixel_center
-    /gimbal/angle_command
-    /debug/image
-
-### Verify IMU publishing:
-
-ros2 topic echo /imu/data --once
-ros2 topic echo /debug/imu_angles --once
-ros2 topic echo /gimbal/roll_correction --once
-
-#### Expected Result (on flat ground):
-
-    /debug/imu_angles:   x≈0.0  y≈0.0  z≈0.0   (flat)
-    /gimbal/roll_correction:  x≈0.0  y≈0.0      (no correction needed)
+---
+*Note: Parameters are currently hardcoded in the `ship_control` module. To modify the reward function or training hyperparameters, please edit the corresponding Python scripts directly.*

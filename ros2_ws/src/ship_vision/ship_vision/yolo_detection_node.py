@@ -24,11 +24,11 @@ import numpy as np
 MODEL_NAME     = "yolov8n.pt"
 CONFIDENCE     = 0.5
 TARGET_OBJECTS = ["person"]
-SKIP_FRAMES    = 3
+SKIP_FRAMES    = 1
 
 # Must match SDF <image> block exactly
-CAMERA_WIDTH  = 640
-CAMERA_HEIGHT = 480
+CAMERA_WIDTH  = 1280
+CAMERA_HEIGHT = 720
 
 # Debug display size — purely visual, does not affect detection coordinates
 DISPLAY_WIDTH = 960
@@ -40,6 +40,7 @@ class YoloDetectionNode(Node):
         super().__init__('yolo_detection_node')
 
         # --- GPU setup (NVIDIA CUDA ONLY)---
+        
         if torch.cuda.is_available():
             self.get_logger().info(
                 f'🚀 GPU detected: {torch.cuda.get_device_name(0)} — using CUDA')
