@@ -11,6 +11,4 @@ ros2_ws/log/
 __pycache__/
 .vscode/
 ppo_gimbal_tensorboard/
-yolov8n.pt
-yolov8m.pt
-yolov8s.pt
+*.pt
