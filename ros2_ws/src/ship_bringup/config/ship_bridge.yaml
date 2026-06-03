@@ -1,0 +1,4 @@
+gz_interface:
+  ros__parameters:
+    world_name: gimbal_world
+    world_file: gimbal_world.sdf

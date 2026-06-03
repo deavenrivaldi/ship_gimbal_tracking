@@ -1,0 +1,530 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.9">
+ 
+
+
+
+      <model name="capstone_boat">
+      <static>false</static>
+        <link name="capstone_link">
+          <enable_wind>true</enable_wind>
+          <pose>5 0 0 0 0 0</pose>
+          <inertial>
+            <mass>15.0</mass>
+            <pose>0 0.2 -0.1 0 0 0</pose>
+            <inertia>
+              <ixx>2.0</ixx>  <!-- 俯仰 (Pitch) -->
+              <ixy>0.0</ixy>
+              <ixz>0.0</ixz>
+              <iyy>0.4</iyy>  <!-- 側翻 (Roll) -->
+              <iyz>0.0</iyz>
+              <izz>2.3</izz>  <!-- 偏航 (Yaw) -->
+            </inertia>
+          </inertial>
+
+          <sensor name="imu_sensor" type="imu">
+              <always_on>1</always_on>
+              <update_rate>100</update_rate> <!-- 建議提高頻率，例如 100 Hz -->
+              <visualize>true</visualize>
+              <topic>imu</topic>
+              
+              <!-- 加入這個 Plugin 才能把數值回傳給 ROS 2 -->
+              <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                  <ros>
+                      <namespace>/</namespace>
+                      <!-- 這裡設定你要回傳數值的 Topic 名稱 -->
+                      <remapping>~/out:=imu_data</remapping>
+                  </ros>
+                  <initial_orientation_as_reference>false</initial_orientation_as_reference>
+              </plugin>
+          </sensor>
+
+          <visual name="capstone_visual">
+            <geometry>
+              <mesh><uri>capstone_boat/Assembly 1.dae</uri></mesh>
+            </geometry>
+          </visual>
+
+          <!-- [新增] 人的模型，當作船的一部分 -->
+          <visual name="person_visual">
+            <!-- 調整這個 pose 來決定人站在船上的哪個位置 -->
+            <pose>0 0 0.95 0 0 3.1416</pose> 
+            <geometry>
+              <mesh><uri>model://walking_person/meshes/walk.dae</uri></mesh>
+            </geometry>
+          </visual>
+                    <!-- Top base -->
+
+
+        <visual name="buoy_vis_L01">
+          <pose>-0.19043630 0.06460338 -0.10472894 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L02">
+          <pose>-0.14043761 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L03">
+          <pose>-0.23631474 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 3. 追加點位 (中段穩定輔助點) -->
+        <visual name="buoy_vis_L04">
+          <pose>-0.190947 0.065603 -0.095727 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L05">
+          <pose>-0.228274 0.065603 -0.079947 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L06">
+          <pose>-0.236825 0.065603 -0.079562 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 4. 追加點位 (船尾後段) -->
+        <visual name="buoy_vis_L07">
+          <pose>-0.167225 0.424603 -0.000871 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L08">
+          <pose>-0.205226 0.424603 0.000852 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 5. 追加點位 (船身前段) -->
+        <visual name="buoy_vis_L09">
+          <pose>-0.188376 -0.375397 0.004255 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L10">
+          <pose>-0.186288 -0.175397 -0.090736 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L11">
+          <pose>-0.235550 -0.175397 -0.078163 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L12">
+          <pose>-0.141203 -0.175397 -0.075331 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+        <visual name="buoy_vis_L13">
+          <pose>-0.190488 -0.055397 -0.102620 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L14">
+          <pose>-0.137477 -0.055397 -0.091443 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_L15">
+          <pose>-0.239275 -0.055397 -0.082611 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+
+        <!-- === 右舷 (Right) 鏡射視覺點位 === -->
+        <!-- 1. 初始點位 (船身中段基礎) -->
+        <visual name="buoy_vis_R01">
+          <pose>0.19043630 0.06460338 -0.10472894 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R02">
+          <pose>0.14043761 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R03">
+          <pose>0.23631474 0.06460338 -0.08894867 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 3. 追加點位 (中段穩定輔助點) -->
+        <visual name="buoy_vis_R04">
+          <pose>0.190947 0.065603 -0.095727 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R05">
+          <pose>0.228274 0.065603 -0.079947 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R06">
+          <pose>0.236825 0.065603 -0.079562 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 4. 追加點位 (船尾後段) -->
+        <visual name="buoy_vis_R07">
+          <pose>0.167225 0.424603 -0.000871 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R08">
+          <pose>0.205226 0.424603 0.000852 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 5. 追加點位 (船身前段) -->
+        <visual name="buoy_vis_R09">
+          <pose>0.188376 -0.375397 0.004255 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R10">
+          <pose>0.186288 -0.175397 -0.090736 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R11">
+          <pose>0.235550 -0.175397 -0.078163 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R12">
+          <pose>0.141203 -0.175397 -0.075331 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+        <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+        <visual name="buoy_vis_R13">
+          <pose>0.190488 -0.055397 -0.102620 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R14">
+          <pose>0.137477 -0.055397 -0.091443 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+        <visual name="buoy_vis_R15">
+          <pose>0.239275 -0.055397 -0.082611 0 0 0</pose>
+          <geometry><sphere><radius>0.006</radius></sphere></geometry>
+          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+        </visual>
+
+
+
+
+
+        </link>
+
+        <plugin
+          filename="libSurface.so"
+          name="maritime::Surface">
+          <link_name>capstone_link</link_name>
+          <fluid_density>1000</fluid_density>
+          
+
+            <points>
+            <!-- ========================================== -->
+            <!--                 側邊船體 A (左舷)            -->
+            <!-- ========================================== -->
+
+        <!-- 1. 初始點位 (船身中段基礎) -->
+            <point>-0.19043630 0.06460338 -0.10472894</point>
+
+            <point>-0.14043761 0.06460338 -0.08894867</point>
+            <point>-0.23631474 0.06460338 -0.08894867</point>
+           <!-- <point>-0.151303 0.065603 -0.078147</point>
+            <point>-0.151303 0.064603 -0.087149</point>
+            <point>-0.140438 0.064603 -0.087149</point>
+            <point>-0.140948 0.065603 -0.078147</point>
+            <point>-0.140948 0.065603 -0.079947</point>
+
+
+            < 2. 追加點位 (船身中後段) >
+            <point>-0.225449 0.064603 -0.086764</point>
+            <point>-0.225449 0.065603 -0.077762</point>
+            <point>-0.236825 0.065603 -0.077762</point>
+            <point>-0.236315 0.064603 -0.086764</point>
+            <point>-0.236825 0.065603 -0.079562</point> -->
+
+             <!-- 3. 追加點位 (中段穩定輔助點) -->
+            <point>-0.190947 0.065603 -0.095727</point>
+            <point>-0.228274 0.065603 -0.079947</point>
+            <point>-0.236825 0.065603 -0.079562</point>
+            <!--<point>-0.153113 0.065603 -0.079947</point>
+            <point>-0.140948 0.065603 -0.079947</point>-->
+
+            <!-- 4. 追加點位 (船尾後段) -->
+<point>-0.167225 0.424603 -0.000871</point>
+            <point>-0.205226 0.424603 0.000852</point>
+
+            <!-- 5. 追加點位 (船身前段) -->
+            <point>-0.188376 -0.375397 0.004255</point>
+<point>-0.186288 -0.175397 -0.090736</point>
+            <point>-0.235550 -0.175397 -0.078163</point>
+            <point>-0.141203 -0.175397 -0.075331</point>
+
+            <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+            <point>-0.190488 -0.055397 -0.102620</point>
+
+            <point>-0.137477 -0.055397 -0.091443</point>
+            <point>-0.239275 -0.055397 -0.082611</point>
+            <!--<point>-0.239275 -0.055397 -0.080811</point>
+            <point>-0.224984 -0.055397 -0.080811</point>
+            <point>-0.151768 -0.055397 -0.089643</point>
+            <point>-0.137477 -0.055397 -0.089643</point>-->
+
+            <!-- 7. 追加點位 (船身中後段細節與過渡區 2) -->
+
+           <!-- <point>-0.227959 0.184603 -0.048575</point>
+            <point>-0.224575 0.184603 -0.048575</point>
+            <point>-0.160934 0.184603 -0.053227</point>
+            <point>-0.148793 0.184603 -0.053227</point> -->
+
+
+            <!-- ========================================== -->
+            <!--                 側邊船體 B (右舷鏡射)          -->
+            <!-- ========================================== -->
+
+            <!-- 1. 初始點位 (船身中段基礎) -->
+            <point>0.19043630 0.06460338 -0.10472894</point>
+
+            <point>0.14043761 0.06460338 -0.08894867</point>
+            <point>0.23631474 0.06460338 -0.08894867</point>
+            <!--<point>0.151303 0.065603 -0.078147</point>
+            <point>0.151303 0.064603 -0.087149</point>
+            <point>0.140438 0.064603 -0.087149</point>
+            <point>0.140948 0.065603 -0.078147</point>
+            <point>0.140948 0.065603 -0.079947</point>-->
+
+            <!-- 2. 追加點位 (船身中後段) 
+            <point>0.225449 0.064603 -0.086764</point>
+            <point>0.225449 0.065603 -0.077762</point>
+            <point>0.236825 0.065603 -0.077762</point>
+            <point>0.236315 0.064603 -0.086764</point>
+            <point>0.236825 0.065603 -0.079562</point>-->
+
+            <!-- 3. 追加點位 (中段穩定輔助點) -->
+            <point>0.190947 0.065603 -0.095727</point>
+            <point>0.228274 0.065603 -0.079947</point>
+            <point>0.236825 0.065603 -0.079562</point>
+            <!--<point>0.153113 0.065603 -0.079947</point>
+            <point>0.140948 0.065603 -0.079947</point>-->
+
+            <!-- 4. 追加點位 (船尾後段) -->
+<point>0.167225 0.424603 -0.000871</point>
+            <point>0.205226 0.424603 0.000852</point>
+
+            <!-- 5. 追加點位 (船身前段) -->
+            <point>0.188376 -0.375397 0.004255</point>
+<point>0.186288 -0.175397 -0.090736</point>
+            <point>0.235550 -0.175397 -0.078163</point>
+            <point>0.141203 -0.175397 -0.075331</point>
+
+            <!-- 6. 追加點位 (船身中前段細節與過渡區 1) -->
+            <point>0.190488 -0.055397 -0.102620</point>
+
+            <point>0.137477 -0.055397 -0.091443</point>
+            <point>0.239275 -0.055397 -0.082611</point>
+            <!--<point>0.239275 -0.055397 -0.080811</point>
+            <point>0.224984 -0.055397 -0.080811</point>
+            <point>0.151768 -0.055397 -0.089643</point>
+            <point>0.137477 -0.055397 -0.089643</point>-->
+
+            <!-- 7. 追加點位 (船身中後段細節與過渡區 2) -->
+
+            <!--<point>0.227959 0.184603 -0.048575</point>
+            <point>0.224575 0.184603 -0.048575</point>
+            <point>0.160934 0.184603 -0.053227</point>
+            <point>0.148793 0.184603 -0.053227</point>-->
+          </points>
+          
+          <fluid_level>0</fluid_level>
+          <wavefield>
+            <topic>/gazebo/wavefield/parameters</topic>
+          </wavefield>
+        </plugin>
+        <plugin
+            filename="gz-sim-hydrodynamics-system"
+            name="gz::sim::systems::Hydrodynamics">
+            <link_name>capstone_link</link_name>
+            
+            <xDotU>0.0</xDotU>
+            <yDotV>0.0</yDotV>
+            <nDotR>0.0</nDotR>
+            
+            <!-- 大幅調低線性阻尼 -->
+            <xU>-1.0</xU>     
+            <yV>-2.5</yV>     
+            <zW>-10.0</zW>     
+            <kP>-2.0</kP>     
+            <mQ>-2.0</mQ>     
+            <nR>-1.5</nR>     
+            
+            <!-- 大幅調低二次阻尼 -->
+            <xAbsU>-1.5</xAbsU> 
+            <yAbsV>-3.5</yAbsV> 
+            <nAbsR>-2.5</nAbsR> 
+          </plugin>
+
+
+
+
+<link name="left_engine_link">
+            <pose>4.81 0.45 -0.02 0 0 0</pose>
+            <visual name="left_engine_visual">
+              <geometry><box><size>0.05 0.1 0.1</size></box></geometry>
+              <material><ambient>0.2 0.2 0.2 1</ambient></material>
+            </visual>
+            <collision name="left_engine_collision">
+              <geometry><box><size>0.05 0.1 0.1</size></box></geometry>
+            </collision>
+            <inertial>
+              <mass>1.0</mass>
+              <inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia>
+            </inertial>
+          </link>
+
+          <link name="left_propeller_link">
+            <pose>4.81 0.48 -0.06 0 0 0</pose>
+            <visual name="left_propeller_visual">
+              <pose>0 0 0 1.5708 0 0</pose> 
+              <geometry><cylinder><length>0.04</length><radius>0.06</radius></cylinder></geometry>
+              <material><ambient>0.8 0.8 0.1 1</ambient></material>
+            </visual>
+            <collision name="left_propeller_collision">
+              <pose>0 0 0 1.5708 0 0</pose>
+              <geometry><cylinder><length>0.04</length><radius>0.06</radius></cylinder></geometry>
+            </collision>
+            <inertial>
+              <mass>0.2</mass>
+              <inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia>
+            </inertial>
+          </link>
+
+          <joint name="left_chasis_engine_joint" type="revolute">
+            <axis>
+              <xyz>0 0 1</xyz> <limit><lower>-1.57</lower><upper>1.57</upper><effort>50</effort><velocity>10</velocity></limit>
+            </axis>
+            <parent>capstone_link</parent>
+            <child>left_engine_link</child>
+          </joint>
+
+          <joint name="left_engine_propeller_joint" type="revolute">
+            <axis>
+              <xyz>0 1 0</xyz> <limit><effort>100</effort><velocity>100</velocity></limit>
+              <dynamics><friction>0.05</friction><damping>0.05</damping></dynamics>
+            </axis>
+            <parent>left_engine_link</parent>
+            <child>left_propeller_link</child>
+          </joint>
+
+          <link name="right_engine_link">
+            <pose>5.19 0.45 -0.02 0 0 0</pose>
+            <visual name="right_engine_visual">
+              <geometry><box><size>0.05 0.1 0.1</size></box></geometry>
+              <material><ambient>0.2 0.2 0.2 1</ambient></material>
+            </visual>
+            <collision name="right_engine_collision">
+              <geometry><box><size>0.05 0.1 0.1</size></box></geometry>
+            </collision>
+            <inertial>
+              <mass>1.0</mass>
+              <inertia><ixx>0.01</ixx><iyy>0.01</iyy><izz>0.01</izz></inertia>
+            </inertial>
+          </link>
+
+          <link name="right_propeller_link">
+            <pose>5.19 0.48 -0.06 0 0 0</pose>
+            <visual name="right_propeller_visual">
+              <pose>0 0 0 1.5708 0 0</pose>
+              <geometry><cylinder><length>0.04</length><radius>0.06</radius></cylinder></geometry>
+              <material><ambient>0.8 0.8 0.1 1</ambient></material>
+            </visual>
+            <collision name="right_propeller_collision">
+              <pose>0 0 0 1.5708 0 0</pose>
+              <geometry><cylinder><length>0.04</length><radius>0.06</radius></cylinder></geometry>
+            </collision>
+            <inertial>
+              <mass>0.2</mass>
+              <inertia><ixx>0.001</ixx><iyy>0.001</iyy><izz>0.001</izz></inertia>
+            </inertial>
+          </link>
+
+          <joint name="right_chasis_engine_joint" type="revolute">
+            <axis>
+              <xyz>0 0 1</xyz>
+              <limit><lower>-1.57</lower><upper>1.57</upper><effort>50</effort><velocity>10</velocity></limit>
+            </axis>
+            <parent>capstone_link</parent>
+            <child>right_engine_link</child>
+          </joint>
+
+          <joint name="right_engine_propeller_joint" type="revolute">
+            <axis>
+              <xyz>0 1 0</xyz>
+              <limit><effort>100</effort><velocity>100</velocity></limit>
+              <dynamics><friction>0.05</friction><damping>0.05</damping></dynamics>
+            </axis>
+            <parent>right_engine_link</parent>
+            <child>right_propeller_link</child>
+          </joint>
+
+          <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+            <joint_name>left_engine_propeller_joint</joint_name>
+            <thrust_coefficient>0.004422</thrust_coefficient>
+            <fluid_density>1000</fluid_density>
+            <propeller_diameter>0.12</propeller_diameter>
+            <velocity_control>true</velocity_control>
+            </plugin>
+
+          <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+            <joint_name>left_chasis_engine_joint</joint_name>
+            <use_velocity_commands>true</use_velocity_commands>
+            <topic>/capstone_boat/left/steering/cmd_pos</topic>
+          </plugin>
+
+          <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+            <joint_name>right_engine_propeller_joint</joint_name>
+            <thrust_coefficient>0.004422</thrust_coefficient>
+            <fluid_density>1000</fluid_density>
+            <propeller_diameter>0.12</propeller_diameter>
+            <velocity_control>true</velocity_control>
+            </plugin>
+
+          <plugin filename="gz-sim-joint-position-controller-system" name="gz::sim::systems::JointPositionController">
+            <joint_name>right_chasis_engine_joint</joint_name>
+            <use_velocity_commands>true</use_velocity_commands>
+            <topic>/capstone_boat/right/steering/cmd_pos</topic>
+          </plugin>
+
+          <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+          <publish_link_pose>false</publish_link_pose>
+          <publish_model_pose>true</publish_model_pose>
+          <update_frequency>10</update_frequency> 
+          </plugin>
+
+          <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu">
+          </plugin>
+
+    </model>
+</sdf>

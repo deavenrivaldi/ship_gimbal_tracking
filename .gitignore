@@ -9,3 +9,5 @@ ros2_ws/log/
 *.tar.gz
 __pycache__/
 .vscode/
+
+ppo_gimbal_tensorboard/

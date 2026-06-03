@@ -24,8 +24,11 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'gimbal_controller_node = ship_control.gimbal_controller_node:main',
-            'imu_stabilizer_node = ship_control.imu_stabilizer_node:main'
+            #'gimbal_controller_node = ship_control.gimbal_controller_node:main',
+            'imu_stabilizer_node = ship_control.imu_stabilizer_node:main',
+
+            'fire_node = ship_control.fire_node:main'
+
         ],
     },
 )
