@@ -1,62 +1,84 @@
-### 一、 訓練環境與參數設定
-*   **視覺與運算：**
-    *   鏡頭更新率提升至 120Hz。
-    *   環境重啟機制：確保主船與目標同步刷新，避免主船漂離；雲台不刷新以維持鏡頭狀態。
-    *   優化運算：先以 Gazebo 畫面確認獎勵合理性與收斂情況，後續訓練改用 `-s` 模式（無畫面）並調用最適合的 CPU 或 GPU 資源。
-*   **雲台運動限制：**
-    *   移除 IMU 與 Pixel-to-Angle 的限制。
-    *   放寬雲台轉動範圍，實現 360 度無限旋轉，並提升轉動速度。
-*   **訓練階段策略（課程學習）：**
-    1. 第一關：目標搜尋。
-    2. 第二關：適應位置變換。
-    3. 第三關：熟悉旋轉。
-    4. 第四關：目標跟隨與預測。
-*   **生成與晉級機制：**
-    *   目標生成邏輯：根據鏡頭當前朝向生成，防止因生成在眼前造成的「幸運擊中」；確保 AI 具備主動搜尋能力。
-    *   晉級判定：採用平均回報（`rollout/ep_rew_mean`）作為晉級門檻，確保模型完全收斂後再進入下一關。
+# Project README: Ship Gimbal Tracking
 
-### 二、 獎勵函數設計
-*   **階梯式追蹤獎勵：**
-    *   誤差 < 2°：+60.0 分（完美爆頭）。
-    *   誤差 < 8°：+20.0 分（穩定追蹤）。
-    *   誤差 < 20°：+5.0 分（邊緣捕捉）。
-    *   視野外：無獎勵。
-    *   獎勵扣除：根據動作幅度 (`action_magnitude`) 進行負回饋。
-*   **平滑度與控制懲罰：**
-    *   防抖動懲罰：針對來回快速變換的動作施加懲罰，避免雲台頻繁抖動（調整此參數需考量對旋轉追蹤的負面影響）。
-    *   Pitch 水平懲罰：`reward -= (action_pitch**2) * 0.05`，鼓勵保持水平掃描。
-*   **時效控制：**
-    *   訓練時間設定：設定為約繞行一圈的時間即刷新世界，避免 AI 陷入嘗試尋找 Bug 而非完成目標。
+本專案旨在透過強化學習（PPO）訓練船舶雲台進行目標追蹤，包含模擬環境架設、視覺辨識與訓練流程。
 
-### 三、 執行與部署指令
-*   **環境準備：**
-    *   安裝依賴：`pip install stable-baselines3[extra] gymnasium numpy`
-*   **終端機操作：**
-    *   **First Terminal (監控)：** 監聽接觸感測器。
-        ```bash
-        source /opt/ros/jazzy/setup.bash
-        . ~/workspace/install/setup.bash
-        gz topic -e -t /world/gimbal_world/model/wamv/link/person_link/sensor/person_contact/contact
-        ```
-    *   **Second Terminal (訓練)：**
-        ```bash
-        source /opt/ros/jazzy/setup.bash
-        source ~/ship/ship_gimbal_tracking/ros2_ws/install/setup.bash
-        source ~/ship/ship_gimbal_tracking/ros2_ws/src/ship_control/ship_control/rl_env/bin/activate
-        cd ~/ship/ship_gimbal_tracking/ros2_ws/src/ship_control/ship_control/
-        python3 train_ppo.py
-        ```
-    *   **Third Terminal (啟動環境)：**
-        ```bash
-        # 設定路徑環境變數
-        export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/install/lib:/home/wuru/ship/ship_gimbal_tracking/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
-        export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
-        # 編譯與執行
-        colcon build --symlink-install --packages-select ship_vision
-        ros2 launch ship_bringup gimbal_launch.py
-        ```
+## 1. 環境準備 (Setup)
 
-### 四、 強化學習核心機制說明
-*   **信用分配 (Credit Assignment)：** 利用 Actor-Critic 架構，透過折現因子 ($\gamma$) 將延遲的獎勵訊號回推至關鍵決策時間點。
-*   **狀態空間優化：** 必須納入目標速度（Velocity）資訊，協助評論家（Critic）區分命中與未命中情境，進而建立對提前量的預判能力。
+### 1.1.1 建立虛擬環境 - ship_gimbal : for ros2
+請在專案根目錄下執行以下指令建立並啟用環境：
+```bash
+cd ~/ship/ship_gimbal_tracking/  # 請依實際路徑調整
+python3 -m venv ship_gimbal
+source ship_gimbal/bin/activate
+```
+
+### 1.1.2 系統相依安裝 - ship_gimbal : for ros2
+確保系統已安裝 ROS 2 Jazzy。並安裝必要的 Python 核心相依套件：
+```bash
+pip install "numpy<2" matplotlib opencv-python ultralytics foxglove-sdk
+# 若使用 GPU 運算，請依照硬體架構安裝對應的 Torch 版本
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
+```
+
+### 1.2.1 建立虛擬環境 - rl_env : for ppo
+請在專案根目錄下執行以下指令建立並啟用環境：
+```bash
+cd ~/ship/ship_gimbal_tracking/ # 請依實際路徑調整
+python3 -m venv rl_env
+source rl_env/bin/activate
+```
+
+### 1.2.2 系統相依安裝 - rl_env : for ppo
+確保系統已安裝 ROS 2 Jazzy。並安裝必要的 Python 核心相依套件：
+```bash
+pip install stable-baselines3[extra] gymnasium numpy
+# 若使用 GPU 運算，請依照硬體架構安裝對應的 Torch 版本
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/rocm7.2
+```
+
+## 2. 設定說明 (Configuration)
+目前所有參數（如獎勵權重、雲台轉動限制、學習率等）均已硬編碼於訓練腳本中。如需修改行為，請直接編輯對應的 Python 源碼檔案。
+
+## 3. 執行流程 (Usage)
+
+請依序開啟三個終端機進行初始化與訓練：
+
+### 終端機 1：啟動模擬環境
+此視窗負責載入 Gazebo 世界並啟動系統插件。
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/ship/ship_gimbal_tracking/ros2_ws/install/setup.bash
+
+# 設定環境變數 (home/ethan/project/ship_test 需改成本地目錄位置)
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$GZ_SIM_SYSTEM_PLUGIN_PATH:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/lib:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export IGN_GAZEBO_SYSTEM_PLUGIN_PATH=$IGN_GAZEBO_SYSTEM_PLUGIN_PATH:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/lib:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/lib:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/install/gazebo_maritime/lib:/home/ethan/project/ship_test/ship_gimbal_tracking/ros2_ws/src/ship_simulation/external/gazebo_maritime_ws/src/gazebo_maritime/lib
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libpthread.so.0
+
+# 編譯與啟動
+cd row2_ws
+colcon build --symlink-install --packages-select ship_vision
+ros2 launch ship_bringup gimbal_launch.py
+```
+
+### 終端機 2：監控感測器
+用於確認目標接觸狀態。
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/project/ship_test/ship_gimbal_tracking/ros2_ws/install/setup.bash # "project/ship_test" 需改成本地對應路徑
+gz topic -e -t /world/gimbal_world/model/wamv/link/person_link/sensor/person_contact/contact
+```
+
+### 終端機 3：執行訓練
+啟動 PPO 訓練程序。
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/project/ship_test/ship_gimbal_tracking/ros2_ws/install/setup.bash
+source rl_env/bin/activate
+python3 ros2_ws/src/ship_control/ship_control/train_ppo.py
+```
+
+## 4. 訓練策略說明
+*   **階段式學習：** 訓練分為「尋找目標」、「位置變換」、「旋轉適應」、「跟隨預測」四階段。
+*   **晉級機制：** 系統依據 `rollout/ep_rew_mean`（平均回報）作為收斂基準，達到設定閾值後自動晉級下一階段。
+*   **重置邏輯：** 為防止過度擬合與僥倖擊中，世界刷新時目標生成位置將依據鏡頭當前朝向調整。
