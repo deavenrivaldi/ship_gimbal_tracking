@@ -15,20 +15,17 @@ setup(
     zip_safe=True,
     maintainer='linzhensheng',
     maintainer_email='youngbillionairesid@gmail.com',
-    description='TODO: Package description',
+    description='Gimbal control — stabilization and RL training',
     license='TODO: License declaration',
     extras_require={
-        'test': [
-            'pytest',
-        ],
+        'test': ['pytest'],
     },
     entry_points={
         'console_scripts': [
-            #'gimbal_controller_node = ship_control.gimbal_controller_node:main',
-            'imu_stabilizer_node = ship_control.imu_stabilizer_node:main',
-
-            'fire_node = ship_control.fire_node:main'
-
+            # ── Active nodes ──────────────────────────────────────────
+            'imu_stabilizer_node    = ship_control.imu_stabilizer_node:main',
+            'gimbal_stabilizer_node = ship_control.gimbal_stabilizer_node:main',
+            'fire_node              = ship_control.fire_node:main',
         ],
     },
 )
